@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Transports</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 5px;
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+        }
+        .transport-item {
+            border: 1px solid #ddd;
+            margin-bottom: 5px;
+            padding: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .transport-item:hover {
+            background-color: #cce5ff;
+        }
+        .transport-item.selected {
+            background-color: #b3d9ff;
+        }
+        .transport-checkbox {
+            flex-shrink: 0;
+        }
+        .transport-id {
+            font-weight: bold;
+            min-width: 80px;
+            flex-shrink: 0;
+        }
+        .transport-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            flex: 1;
+            font-size: 11px;
+        }
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+        .detail-label {
+            color: #666;
+            font-size: 10px;
+        }
+        .detail-value {
+            font-weight: 500;
+        }
+    </style>
+    <script>
+        function selectTransport(id, element) {
+            parent.document.getElementById('details_frame').src = '/details/transport/' + id;
+            // Remove previous selection
+            document.querySelectorAll('.transport-item').forEach(item => item.classList.remove('selected'));
+            // Add selection to clicked item
+            element.classList.add('selected');
+        }
+        function makeSingle(checkbox, id, element) {
+            if (checkbox.checked) {
+                var checkboxes = document.querySelectorAll('input[name="transport"]');
+                checkboxes.forEach(cb => { if (cb !== checkbox) cb.checked = false; });
+                selectTransport(id, element);
+            }
+        }
+        function adjustDateRange(delta) {
+            const rangeInput = document.getElementById('date_range_days');
+            let currentValue = parseInt(rangeInput.value) || 0;
+            currentValue = currentValue + delta;
+            rangeInput.value = currentValue;
+            document.querySelector('form').submit();
+        }
+    </script>
+</head>
+<body>
+    <form method="GET" action="/transports" style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 10px;">
+        <input type="text" name="transport_id" placeholder="Transport ID" value="{{ request.args.get('transport_id', '') }}" style="padding: 4px;">
+        <input type="text" name="collection_pc" placeholder="Collection PC (e.g. 2700-3500)" value="{{ request.args.get('collection_pc', '') }}" style="padding: 4px; width: 180px;">
+        <input type="text" name="delivery_pc" placeholder="Delivery PC (e.g. 2700-3500)" value="{{ request.args.get('delivery_pc', '') }}" style="padding: 4px; width: 180px;">
+        <div style="display: flex; align-items: center; gap: 5px;">
+            <span style="font-size: 12px;">{{ request.args.get('start_date', today_date) }}</span>
+            <input type="date" id="date_picker_input" name="start_date" value="{{ request.args.get('start_date', today_date) }}" style="width: 20px; height: 20px; cursor: pointer; border: 1px solid #999; border-radius: 3px;" title="Change start date" onchange="this.form.submit()">
+            <input type="number" id="date_range_days" name="date_range_days" value="{{ request.args.get('date_range_days', '0') }}" readonly style="padding: 4px; width: 30px; background-color: #f0f0f0; border: 1px solid #ccc; text-align: center;">
+            <button type="button" onclick="adjustDateRange(-1)" style="padding: 2px 8px;">-</button>
+            <button type="button" onclick="adjustDateRange(1)" style="padding: 2px 8px;">+</button>
+        </div>
+    </form>
+    <div>
+        {% for transport in transports %}
+        <div class="transport-item" onclick="selectTransport('{{ transport.Transport_ID }}', this)">
+            <input type="checkbox" name="transport" value="{{ transport.Transport_ID }}" class="transport-checkbox" onchange="makeSingle(this, '{{ transport.Transport_ID }}', this.parentElement)" onclick="event.stopPropagation()">
+            <span class="transport-id">{{ transport.Transport_ID }}</span>
+            <div class="transport-details">
+                <div class="detail-item">
+                    <span class="detail-label">LDM</span>
+                    <span class="detail-value">{{ transport.Ldm }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Pickup</span>
+                    <span class="detail-value">{{ transport.first_stop_date }} {{ transport.first_stop_time }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Delivery</span>
+                    <span class="detail-value">{{ transport.last_stop_date }} {{ transport.last_stop_time }}</span>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>

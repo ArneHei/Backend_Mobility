@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>OneDispatch Direct</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 10px;
+            font-family: Arial, sans-serif;
+            background-color: #f0f7ff;
+        }
+        .header {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+        h1 {
+            margin: 0;
+            color: black;
+        }
+        .nav-links {
+            font-size: 12px;
+        }
+        .nav-links a {
+            margin-right: 8px;
+            color: #1a5490;
+            text-decoration: none;
+        }
+        .nav-links a:hover {
+            text-decoration: underline;
+        }
+        .button-container {
+            margin-bottom: 10px;
+        }
+        button {
+            background-color: #1a5490;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            margin-right: 8px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        button:hover {
+            background-color: #0d3d6b;
+        }
+        .frames-container {
+            width: 100%;
+            height: calc(100vh - 120px);
+            display: flex;
+            flex-direction: column;
+        }
+        .top-row {
+            display: flex;
+            height: 75%;
+            gap: 10px;
+        }
+        .frame-wrapper {
+            flex: 1;
+            border: 2px solid black;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        .bottom-row {
+            height: 25%;
+            margin-top: 10px;
+            border: 2px solid black;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        #message {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: #e6f2ff;
+            border: 2px solid #4d94ff;
+            border-bottom: none;
+            padding: 10px;
+            text-align: center;
+            display: none;
+            color: #1a5490;
+            font-weight: bold;
+        }
+    </style>
+    <script>
+        function showMessage(msg) {
+            var msgDiv = document.getElementById('message');
+            msgDiv.textContent = msg;
+            msgDiv.style.display = 'block';
+            setTimeout(function() { msgDiv.style.display = 'none'; }, 5000);
+        }
+        function createTransport() {
+            var iframe = document.getElementById('shipments_frame');
+            var checkboxes = iframe.contentDocument.querySelectorAll('input[name="shipment"]:checked');
+            var ids = [];
+            for (var i = 0; i < checkboxes.length; i++) {
+                ids.push(checkboxes[i].value);
+            }
+            if (ids.length > 0) {
+                fetch('/create_transport', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({shipments: ids})
+                }).then(response => response.json()).then(data => {
+                    if (data.message.startsWith('Error:')) {
+                        showMessage(data.message.substring(7));
+                    } else {
+                        document.getElementById('transports_frame').contentWindow.location.reload();
+                        document.getElementById('shipments_frame').contentWindow.location.reload();
+                    }
+                });
+            } else {
+                alert('No shipments selected');
+            }
+        }
+        function addShipment() {
+            var shipmentsIframe = document.getElementById('shipments_frame');
+            var shipmentCheckboxes = shipmentsIframe.contentDocument.querySelectorAll('input[name="shipment"]:checked');
+            var shipmentIds = [];
+            for (var i = 0; i < shipmentCheckboxes.length; i++) {
+                shipmentIds.push(shipmentCheckboxes[i].value);
+            }
+            var transportsIframe = document.getElementById('transports_frame');
+            var transportRadio = transportsIframe.contentDocument.querySelector('input[name="transport"]:checked');
+            if (!transportRadio) {
+                alert('No transport selected');
+                return;
+            }
+            var transportId = transportRadio.value;
+            if (shipmentIds.length > 0) {
+                fetch('/add_shipment', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({transport: transportId, shipments: shipmentIds})
+                }).then(response => response.json()).then(data => {
+                    showMessage(data.message);
+                    document.getElementById('transports_frame').contentWindow.location.reload();
+                    document.getElementById('shipments_frame').contentWindow.location.reload();
+                });
+            } else {
+                alert('No shipments selected');
+            }
+        }
+        function removeShipment() {
+            var detailsIframe = document.getElementById('details_frame');
+            var shipmentCheckboxes = detailsIframe.contentDocument.querySelectorAll('input[name="transport_shipment"]:checked');
+            var shipmentIds = [];
+            for (var i = 0; i < shipmentCheckboxes.length; i++) {
+                shipmentIds.push(shipmentCheckboxes[i].value);
+            }
+            var transportsIframe = document.getElementById('transports_frame');
+            var transportRadio = transportsIframe.contentDocument.querySelector('input[name="transport"]:checked');
+            if (!transportRadio) {
+                alert('No transport selected');
+                return;
+            }
+            var transportId = transportRadio.value;
+            if (shipmentIds.length > 0) {
+                fetch('/remove_shipment', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({transport: transportId, shipments: shipmentIds})
+                }).then(response => response.json()).then(data => {
+                    showMessage(data.message);
+                    document.getElementById('transports_frame').contentWindow.location.reload();
+                    document.getElementById('shipments_frame').contentWindow.location.reload();
+                    document.getElementById('details_frame').contentWindow.location.reload();
+                });
+            } else {
+                alert('No shipments selected');
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="header">
+        <h1>OneDispatch Direct</h1>
+        <div class="nav-links">
+            <a href="/">Overview</a>
+            <a href="/planning">Planning</a>
+        </div>
+    </div>
+    <div class="button-container">
+        <button onclick="createTransport()">Create Transport</button>
+        <button onclick="addShipment()">Add Shipment</button>
+        <button onclick="removeShipment()">Remove Shipment</button>
+    </div>
+    <div class="frames-container">
+        <div class="top-row">
+            <div class="frame-wrapper">
+                <iframe id="shipments_frame" src="/shipments"></iframe>
+            </div>
+            <div class="frame-wrapper">
+                <iframe id="transports_frame" src="/transports"></iframe>
+            </div>
+        </div>
+        <div class="bottom-row">
+            <iframe id="details_frame" src=""></iframe>
+        </div>
+    </div>
+    <div id="message"></div>
+</body>
+</html>

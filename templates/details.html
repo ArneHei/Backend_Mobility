@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Details</title>
+</head>
+<body>
+    {% if item_type == 'shipment' %}
+    <table width="100%">
+        <tr>
+            <td width="33%"><strong>Shipment ID:</strong> {{ item.Shipment_ID }}<br><strong>Transport:</strong> {{ item.Transport }}<br><strong>Weight:</strong> {{ item.Weight }}<br><strong>Volume:</strong> {{ item.Volume }}<br><strong>Ldm:</strong> {{ item.Ldm }}<br><strong>Content:</strong> {{ item.Content }}<br><strong>Units:</strong> {{ item.Units }} {{ item.Unit_type }}<br><strong>Hazardous:</strong> {{ item.Hazardous }}<br><strong>Cost:</strong> {{ item.Cost }}</td>
+            <td width="33%"><strong>Collection Name</strong><br>{{ item.Collection_Name }}<br><strong>Collection Address</strong><br>{{ item.Collection_Address }}<br><strong>Collection Postal Code</strong><br>{{ item.Collection_Postal_Code|int }} {{ item.Collection_City }}<br><strong>Pickup Date</strong><br>{{ item.Pickup_date }}<br><strong>Pickup Time</strong><br>{{ item.Pickup_time }}</td>
+            <td width="33%"><strong>Delivery Name</strong><br>{{ item.Delivery_Name }}<br><strong>Delivery Address</strong><br>{{ item.Delivery_Address }}<br><strong>Delivery Postal Code</strong><br>{{ item.Delivery_Postal_Code|int }} {{ item.Delivery_City }}<br><strong>Delivery Date</strong><br>{{ item.Delivery_date }}<br><strong>Delivery Time</strong><br>{{ item.Delivery_time }}</td>
+        </tr>
+    </table>
+    {% elif item_type == 'transport' %}
+    <table width="100%">
+        <tr>
+            <td width="50%" valign="top">
+                <strong>Transport ID:</strong> {{ item.Transport_ID }}<br>
+                <strong>Department:</strong> {{ item.Department }}<br>
+                <strong>Shipments:</strong> 
+                <ul>
+                    {% for shipment_id in item.Shipments %}
+                    <li><input type="checkbox" name="transport_shipment" value="{{ shipment_id }}"> {{ shipment_id }}</li>
+                    {% endfor %}
+                </ul>
+                <strong>Pickup Date:</strong> {{ item.Pickup_date }}<br>
+                <strong>Delivery Date:</strong> {{ item.Delivery_date }}<br>
+                <strong>Weight:</strong> {{ item.Weight }}<br>
+                <strong>Volume:</strong> {{ item.Volume }}<br>
+                <strong>Ldm:</strong> {{ item.Ldm }}<br>
+                <strong>Cost:</strong> {{ item.Cost }}<br>
+                <strong>Status:</strong> {{ item.Status }}<br>
+                <strong>Vehicle:</strong> {{ item.Vehicle }}<br>
+                <strong>Haulier:</strong> {{ item.Haulier }}<br>
+                <strong>Driver:</strong> {{ item.Driver }}<br>
+                <strong>Trailer:</strong> {{ item.Trailer }}
+            </td>
+            <td width="50%">
+                <table width="100%">
+                    <tr>
+                        <td width="50%" valign="top">
+                            <h4>Pickup Stops</h4>
+                            {% if stops %}
+                            <ol>
+                                {% for stop in stops %}
+                                {% if stop.Type == 'P' %}
+                                <li>
+                                    Time: {{ stop.Time }}<br>
+                                    Date: {{ stop.Date }}<br>
+                                    Name: {{ stop.Name }}<br>
+                                    City: {{ stop.City }}<br>
+                                    Address: {{ stop.Address }}<br>
+                                    Postal Code: {{ stop.Postal_Code }}
+                                </li>
+                                {% endif %}
+                                {% endfor %}
+                            </ol>
+                            {% else %}
+                            <p>No stops available.</p>
+                            {% endif %}
+                        </td>
+                        <td width="50%" valign="top">
+                            <h4>Delivery Stops</h4>
+                            {% if stops %}
+                            <ol>
+                                {% for stop in stops %}
+                                {% if stop.Type == 'D' %}
+                                <li>
+                                    Time: {{ stop.Time }}<br>
+                                    Date: {{ stop.Date }}<br>
+                                    Name: {{ stop.Name }}<br>
+                                    City: {{ stop.City }}<br>
+                                    Address: {{ stop.Address }}<br>
+                                    Postal Code: {{ stop.Postal_Code }}
+                                </li>
+                                {% endif %}
+                                {% endfor %}
+                            </ol>
+                            {% else %}
+                            <p>No stops available.</p>
+                            {% endif %}
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+    {% endif %}
+</body>
+</html>

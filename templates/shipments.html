@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Shipments</title>
+    <style>
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .shipments-header,
+        .shipment-item {
+            display: grid;
+            grid-template-columns: 32px 0.9fr 1.2fr 0.8fr 0.8fr 0.9fr 0.7fr 0.9fr 0.7fr 0.6fr 0.6fr;
+            column-gap: 8px;
+            align-items: center;
+            list-style: none;
+            font-size: 12px;
+        }
+        .shipments-header {
+            font-weight: bold;
+            border-bottom: 1px solid #999;
+            padding: 4px 0;
+            color: #333;
+        }
+        .shipment-item {
+            border-bottom: 1px solid #ccc;
+            padding: 4px 0;
+        }
+        .shipment-item:last-child {
+            border-bottom: none;
+        }
+        .shipment-id {
+            font-weight: bold;
+        }
+        .shipment-click {
+            cursor: pointer;
+            display: contents;
+        }
+        .shipment-details {
+            color: #666;
+        }
+        .shipment-selected {
+            background-color: #e6f2ff;
+        }
+    </style>
+    <script>
+        function selectShipment(id, el) {
+            parent.document.getElementById('details_frame').src = '/details/shipment/' + id;
+            // Highlight the clicked row
+            document.querySelectorAll('.shipment-item').forEach(li => li.classList.remove('shipment-selected'));
+            if (el) {
+                const li = el.closest('li');
+                if (li) li.classList.add('shipment-selected');
+            }
+        }
+        function toggleFilter() {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('filter') === 'all') {
+                urlParams.set('filter', 'unassigned');
+            } else {
+                urlParams.set('filter', 'all');
+            }
+            window.location.href = '/shipments?' + urlParams.toString();
+        }
+        function adjustDateRange(delta) {
+            const rangeInput = document.getElementById('date_range_days');
+            let currentValue = parseInt(rangeInput.value) || 0;
+            currentValue = currentValue + delta;
+            rangeInput.value = currentValue;
+            document.querySelector('form').submit();
+        }
+
+    </script>
+</head>
+<body>
+    <div class="header-container">
+        <form method="GET" action="/shipments" style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 10px;">
+            <input type="text" name="shipment_id" placeholder="Shipment ID" value="{{ request.args.get('shipment_id', '') }}" style="padding: 4px;">
+            <input type="text" name="collection_pc" placeholder="Collection PC (e.g. 2700-3500)" value="{{ request.args.get('collection_pc', '') }}" style="padding: 4px; width: 180px;">
+            <input type="text" name="delivery_pc" placeholder="Delivery PC (e.g. 2700-3500)" value="{{ request.args.get('delivery_pc', '') }}" style="padding: 4px; width: 180px;">
+            <div style="display: flex; align-items: center; gap: 5px;">
+                <span style="font-size: 12px;">{{ request.args.get('start_date', today_date) }}</span>
+                <input type="date" id="date_picker_input" name="start_date" value="{{ request.args.get('start_date', today_date) }}" style="width: 20px; height: 20px; cursor: pointer; border: 1px solid #999; border-radius: 3px;" title="Change start date" onchange="this.form.submit()">
+                <input type="number" id="date_range_days" name="date_range_days" value="{{ request.args.get('date_range_days', '0') }}" readonly style="padding: 4px; width: 30px; background-color: #f0f0f0; border: 1px solid #ccc; text-align: center;">
+                <button type="button" onclick="adjustDateRange(-1)" style="padding: 2px 8px;">-</button>
+                <button type="button" onclick="adjustDateRange(1)" style="padding: 2px 8px;">+</button>
+            </div>
+        </form>
+        <button onclick="toggleFilter()">{% if filter_unassigned %}Show All{% else %}Show Unassigned{% endif %}</button>
+    </div>
+    <div class="shipments-header" style="padding-left: 0;">
+        <div></div>
+        <div>ID</div>
+        <div>Collection Name</div>
+        <div>Collection PC</div>
+        <div>Delivery PC</div>
+        <div>Pickup Date</div>
+        <div>Pickup Time</div>
+        <div>Delivery Date</div>
+        <div>Delivery Time</div>
+        <div>LDM</div>
+        <div>Weight</div>
+    </div>
+    <ul style="padding-left: 0; margin: 0;">
+        {% for shipment in shipments %}
+        <li class="shipment-item">
+            <input type="checkbox" name="shipment" value="{{ shipment.Shipment_ID }}">
+            <span class="shipment-click" onclick="selectShipment('{{ shipment.Shipment_ID }}', this)">
+                <span class="shipment-id">{{ shipment.Shipment_ID }}</span>
+                <span class="shipment-details">{{ shipment.Collection_Name }}</span>
+                <span class="shipment-details">{{ shipment.Collection_Postal_Code|int }}</span>
+                <span class="shipment-details">{{ shipment.Delivery_Postal_Code|int }}</span>
+                <span class="shipment-details">{{ shipment.Pickup_date }}</span>
+                <span class="shipment-details">{{ shipment.Pickup_time }}</span>
+                <span class="shipment-details">{{ shipment.Delivery_date }}</span>
+                <span class="shipment-details">{{ shipment.Delivery_time }}</span>
+                <span class="shipment-details">{{ shipment.Ldm }}</span>
+                <span class="shipment-details">{{ shipment.Weight }}kg</span>
+            </span>
+        </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
