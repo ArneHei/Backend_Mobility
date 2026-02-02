@@ -12,7 +12,7 @@
         .shipments-header,
         .shipment-item {
             display: grid;
-            grid-template-columns: 32px 0.9fr 1.2fr 0.8fr 0.8fr 0.9fr 0.7fr 0.9fr 0.7fr 0.6fr 0.6fr;
+            grid-template-columns: 32px 0.9fr 1.2fr 0.8fr 0.8fr 1.1fr 1.1fr 0.6fr 0.6fr;
             column-gap: 8px;
             align-items: center;
             list-style: none;
@@ -27,6 +27,8 @@
         .shipment-item {
             border-bottom: 1px solid #ccc;
             padding: 4px 0;
+            min-height: 20px;
+            height: 20px;
         }
         .shipment-item:last-child {
             border-bottom: none;
@@ -37,6 +39,11 @@
         .shipment-click {
             cursor: pointer;
             display: contents;
+        }
+        .shipment-click > span {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
         .shipment-details {
             color: #666;
@@ -64,29 +71,29 @@
             }
             window.location.href = '/shipments?' + urlParams.toString();
         }
-        function adjustDateRange(delta) {
-            const rangeInput = document.getElementById('date_range_days');
-            let currentValue = parseInt(rangeInput.value) || 0;
-            currentValue = currentValue + delta;
-            rangeInput.value = currentValue;
-            document.querySelector('form').submit();
-        }
-
+        // Submit form on Enter key
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form[action="/shipments"]');
+            if (form) {
+                form.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        form.submit();
+                    }
+                });
+            }
+        });
     </script>
 </head>
 <body>
     <div class="header-container">
         <form method="GET" action="/shipments" style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 10px;">
+            <input type="hidden" name="department" value="{{ request.args.get('department', 'KDEGR') }}">
+            <input type="hidden" name="start_date" value="{{ request.args.get('start_date', today_date) }}">
+            <input type="hidden" name="date_range_days" value="{{ request.args.get('date_range_days', '0') }}">
             <input type="text" name="shipment_id" placeholder="Shipment ID" value="{{ request.args.get('shipment_id', '') }}" style="padding: 4px;">
             <input type="text" name="collection_pc" placeholder="Collection PC (e.g. 2700-3500)" value="{{ request.args.get('collection_pc', '') }}" style="padding: 4px; width: 180px;">
             <input type="text" name="delivery_pc" placeholder="Delivery PC (e.g. 2700-3500)" value="{{ request.args.get('delivery_pc', '') }}" style="padding: 4px; width: 180px;">
-            <div style="display: flex; align-items: center; gap: 5px;">
-                <span style="font-size: 12px;">{{ request.args.get('start_date', today_date) }}</span>
-                <input type="date" id="date_picker_input" name="start_date" value="{{ request.args.get('start_date', today_date) }}" style="width: 20px; height: 20px; cursor: pointer; border: 1px solid #999; border-radius: 3px;" title="Change start date" onchange="this.form.submit()">
-                <input type="number" id="date_range_days" name="date_range_days" value="{{ request.args.get('date_range_days', '0') }}" readonly style="padding: 4px; width: 30px; background-color: #f0f0f0; border: 1px solid #ccc; text-align: center;">
-                <button type="button" onclick="adjustDateRange(-1)" style="padding: 2px 8px;">-</button>
-                <button type="button" onclick="adjustDateRange(1)" style="padding: 2px 8px;">+</button>
-            </div>
         </form>
         <button onclick="toggleFilter()">{% if filter_unassigned %}Show All{% else %}Show Unassigned{% endif %}</button>
     </div>
@@ -94,12 +101,10 @@
         <div></div>
         <div>ID</div>
         <div>Collection Name</div>
-        <div>Collection PC</div>
-        <div>Delivery PC</div>
-        <div>Pickup Date</div>
-        <div>Pickup Time</div>
-        <div>Delivery Date</div>
-        <div>Delivery Time</div>
+        <div>Col</div>
+        <div>Del</div>
+        <div>Pickup</div>
+        <div>Delivery</div>
         <div>LDM</div>
         <div>Weight</div>
     </div>
@@ -110,13 +115,11 @@
             <span class="shipment-click" onclick="selectShipment('{{ shipment.Shipment_ID }}', this)">
                 <span class="shipment-id">{{ shipment.Shipment_ID }}</span>
                 <span class="shipment-details">{{ shipment.Collection_Name }}</span>
-                <span class="shipment-details">{{ shipment.Collection_Postal_Code|int }}</span>
-                <span class="shipment-details">{{ shipment.Delivery_Postal_Code|int }}</span>
-                <span class="shipment-details">{{ shipment.Pickup_date }}</span>
-                <span class="shipment-details">{{ shipment.Pickup_time }}</span>
-                <span class="shipment-details">{{ shipment.Delivery_date }}</span>
-                <span class="shipment-details">{{ shipment.Delivery_time }}</span>
-                <span class="shipment-details">{{ shipment.Ldm }}</span>
+                <span class="shipment-details">{{ shipment.Collection_Country }} {{ "%d"|format(shipment.Collection_Postal_Code|int) }}</span>
+                <span class="shipment-details">{{ shipment.Delivery_Country }} {{ "%d"|format(shipment.Delivery_Postal_Code|int) }}</span>
+                <span class="shipment-details">{{ shipment.Pickup_date }} {{ shipment.Pickup_time }}</span>
+                <span class="shipment-details">{{ shipment.Delivery_date }} {{ shipment.Delivery_time }}</span>
+                <span class="shipment-details">{{ "%.1f"|format(shipment.Ldm) }}</span>
                 <span class="shipment-details">{{ shipment.Weight }}kg</span>
             </span>
         </li>

@@ -13,60 +13,79 @@ class Stop:
     registry = {}
 
     def __init__(self, shipment_obj, stop_type):
-        self.Shipment_ID = shipment_obj.Shipment_ID
-        self.Transport = shipment_obj.Transport
-        self.Department = shipment_obj.Department
+        """
+        Initializes a Stop object.
+
+        Args:
+            shipment_obj (Shipment): The Shipment object associated with this stop.
+            stop_type (str): The type of stop, either 'P' for Pickup or 'D' for Delivery.
+        """
+        if not isinstance(shipment_obj, Shipment):
+            raise TypeError("shipment_obj must be an instance of the Shipment class.")
+        if stop_type not in ['P', 'D']:
+            raise ValueError("stop_type must be 'P' or 'D'.")
+
+        self.shipment = shipment_obj
         self.Type = stop_type
+        self.ID = f"{shipment_obj.Shipment_ID}_{stop_type}"
+        self.Sequence = 0  # Default sequence, will be set when added to transport
+
+        if self.ID in Stop.registry:
+            raise ValueError(f"Stop with ID '{self.ID}' already exists.")
+        Stop.registry[self.ID] = self
+
+        # Inherit additional attributes from the Shipment object
+        self.Transport = shipment_obj.Transport
+        self.Weight = shipment_obj.Weight
+        self.Volume = shipment_obj.Volume
+        self.Ldm = shipment_obj.Ldm
+        self.Content = shipment_obj.Content
+        self.Units = shipment_obj.Units
+        self.Unit_type = shipment_obj.Unit_type
+        self.Hazardous = shipment_obj.Hazardous
+
+        # Add new attributes
+        self.Additional_Information = shipment_obj.Additional_Information
+        self.Services = shipment_obj.Services
 
         if self.Type == 'P':
             self.Time = shipment_obj.Pickup_time
             self.Date = shipment_obj.Pickup_date
-            self.Name = shipment_obj.Collection_Name
-            self.City = shipment_obj.Collection_City
             self.Address = shipment_obj.Collection_Address
+            self.City = shipment_obj.Collection_City
+            self.Name = shipment_obj.Collection_Name
             self.Postal_Code = shipment_obj.Collection_Postal_Code
-            self.Weight = shipment_obj.Weight
-            self.Volume = shipment_obj.Volume
-            self.Ldm = shipment_obj.Ldm
-            self.Content = shipment_obj.Content
-            self.Units = shipment_obj.Units
-            self.Unit_type = shipment_obj.Unit_type
-            self.Hazardous = shipment_obj.Hazardous
+            self.Country = shipment_obj.Collection_Country
+            self.Instructions = shipment_obj.Loading_Instructions
         elif self.Type == 'D':
             self.Time = shipment_obj.Delivery_time
             self.Date = shipment_obj.Delivery_date
-            self.Name = shipment_obj.Delivery_Name
-            self.City = shipment_obj.Delivery_City
             self.Address = shipment_obj.Delivery_Address
+            self.City = shipment_obj.Delivery_City
+            self.Name = shipment_obj.Delivery_Name
             self.Postal_Code = shipment_obj.Delivery_Postal_Code
-            self.Weight = shipment_obj.Weight
-            self.Volume = shipment_obj.Volume
-            self.Ldm = shipment_obj.Ldm
-            self.Content = shipment_obj.Content
-            self.Units = shipment_obj.Units
-            self.Unit_type = shipment_obj.Unit_type
-            self.Hazardous = shipment_obj.Hazardous
-        else:
-            raise ValueError("Invalid stop type")
-
-        stop_id = f"{self.Shipment_ID}_{self.Type}"
-        Stop.registry[stop_id] = self
+            self.Country = shipment_obj.Delivery_Country
+            self.Instructions = shipment_obj.Customer_Reference
 
     @classmethod
     def get_by_id(cls, stop_id):
+        """
+        Retrieves a Stop object by its ID.
+        """
         return cls.registry.get(stop_id)
 
     def __repr__(self):
-        return f"<Stop(Type='{self.Type}', Shipment_ID='{self.Shipment_ID}', Department='{self.Department}', Time='{self.Time}', Date='{self.Date}', Address='{self.Address}' '{self.Postal_Code}')>"
+        return f"<Stop(ID='{self.ID}', Type='{self.Type}', City='{self.City}', Date='{self.Date}')>"
 
 # Define the Shipment class
 class Shipment:
     registry = {}
 
     def __init__(self, Shipment_ID, Transport, Department, Pickup_time, Pickup_date, Delivery_time, Delivery_date,
-                 Collection_Name, Collection_City, Collection_Address, Collection_Postal_Code,
-                 Delivery_Name, Delivery_City, Delivery_Address, Delivery_Postal_Code,
-                 Weight, Volume, Ldm, Content, Units, Unit_type, Hazardous, Cost):
+                 Collection_Name, Collection_City, Collection_Address, Collection_Postal_Code, Collection_Country,
+                 Delivery_Name, Delivery_City, Delivery_Address, Delivery_Postal_Code, Delivery_Country,
+                 Weight, Volume, Ldm, Content, Units, Unit_type, Hazardous, Cost,
+                 Finance_Department="", Incoterm="", Customer="", Loading_Instructions="", Customer_Reference="", Additional_Information="", Services=[]):
         self.Shipment_ID = Shipment_ID
         self.Transport = Transport
         self.Department = Department
@@ -78,10 +97,12 @@ class Shipment:
         self.Collection_City = Collection_City
         self.Collection_Address = Collection_Address
         self.Collection_Postal_Code = Collection_Postal_Code
+        self.Collection_Country = Collection_Country
         self.Delivery_Name = Delivery_Name
         self.Delivery_City = Delivery_City
         self.Delivery_Address = Delivery_Address
         self.Delivery_Postal_Code = Delivery_Postal_Code
+        self.Delivery_Country = Delivery_Country
         self.Weight = Weight
         self.Volume = Volume
         self.Ldm = Ldm
@@ -90,6 +111,13 @@ class Shipment:
         self.Unit_type = Unit_type
         self.Hazardous = Hazardous
         self.Cost = Cost
+        self.Finance_Department = Finance_Department
+        self.Incoterm = Incoterm
+        self.Customer = Customer
+        self.Loading_Instructions = Loading_Instructions
+        self.Customer_Reference = Customer_Reference
+        self.Additional_Information = Additional_Information
+        self.Services = Services
 
         Shipment.registry[Shipment_ID] = self
 
@@ -139,6 +167,7 @@ class Transport:
         self.Haulier_cost = 0.0
         self.Sale = False
         self.Sale_cost = 0.0
+        self.Sheet = 1
 
         # Collect all Stop objects from the associated Shipments
         self.Stops = []
@@ -150,7 +179,7 @@ class Transport:
         return cls.registry.get(Transport_ID)
 
     def __repr__(self):
-        return f"<Transport(ID='{self.Transport_ID}', Department='{self.Department}', Shipments={self.Shipments}, Weight={self.Weight}, Volume={self.Volume}, Ldm={self.Ldm}, status={self.Status}, vehicle={self.Vehicle}, Haulier={self.Haulier}, Driver={self.Driver}, Trailer={self.Trailer}, Cost={self.Cost})>"
+        return f"<Transport(ID='{self.Transport_ID}', Department='{self.Department}', Shipments={self.Shipments}, Weight={self.Weight}, Volume={self.Volume}, Ldm={self.Ldm}, status={self.Status}, vehicle={self.Vehicle}, Haulier={self.Haulier}, Driver={self.Driver}, Trailer={self.Trailer}, Cost={self.Cost}, Sheet={self.Sheet})>"
 
 # Global counter
 department_sequence_counters = {}
@@ -187,6 +216,7 @@ def Transport_create(list_of_shipments_df):
 
     # Collect stops from shipments, 'P' type before 'D' type
     transport_stops = []
+    sequence = 1
     for shipment_id in Shipment_IDs:
         pickup_stop_id = f"{shipment_id}_P"
         delivery_stop_id = f"{shipment_id}_D"
@@ -195,9 +225,13 @@ def Transport_create(list_of_shipments_df):
         delivery_stop_obj = Stop.get_by_id(delivery_stop_id)
 
         if pickup_stop_obj:
+            pickup_stop_obj.Sequence = sequence
             transport_stops.append(pickup_stop_obj)
+            sequence += 1
         if delivery_stop_obj:
+            delivery_stop_obj.Sequence = sequence
             transport_stops.append(delivery_stop_obj)
+            sequence += 1
 
     # Ensure the department has an entry in the sequence counter
     if department not in department_sequence_counters:
@@ -283,6 +317,10 @@ def Transport_add(transport_id, list_of_shipments_df):
             transport_obj.Stops.append(pickup_stop_obj)
         if delivery_stop_obj:
             transport_obj.Stops.append(delivery_stop_obj)
+    
+    # Update sequence numbers for all stops
+    for idx, stop in enumerate(transport_obj.Stops, start=1):
+        stop.Sequence = idx
 
     # Update shipment objects
     for shipment_id in new_shipment_ids:
@@ -293,13 +331,33 @@ def Transport_add(transport_id, list_of_shipments_df):
     print(f"Added shipments {new_shipment_ids} to transport {transport_obj.Transport_ID}")
     return transport_obj
 
-def Transport_remove(transport_id, shipment_ids):
+def Transport_remove(shipment_ids):
     """
     Removes one or more shipments from a transport and updates the transport's metrics.
+    All shipments must be assigned to the same transport.
     """
+    if not shipment_ids:
+        raise ValueError("No shipment IDs provided.")
+    
+    # Get the transport ID from the shipments and verify all have the same transport
+    transport_id = None
+    for shipment_id in shipment_ids:
+        shipment_obj = Shipment.get_by_id(shipment_id)
+        if not shipment_obj:
+            raise ValueError(f"Shipment '{shipment_id}' not found.")
+        
+        if transport_id is None:
+            transport_id = shipment_obj.Transport
+            if not transport_id:
+                raise ValueError(f"Shipment '{shipment_id}' is not assigned to any transport.")
+        else:
+            if shipment_obj.Transport != transport_id:
+                raise ValueError(f"All shipments must be assigned to the same transport. Found '{shipment_obj.Transport}' and '{transport_id}'.")
+    
+    # Get the transport object
     transport = Transport.get_by_id(transport_id)
     if not transport:
-        return None
+        raise ValueError(f"Transport '{transport_id}' not found.")
 
     removed_count = 0
     for shipment_id in shipment_ids:
@@ -344,6 +402,10 @@ def Transport_remove(transport_id, shipment_ids):
             transport.Stops = new_stops
 
         removed_count += 1
+    
+    # Update sequence numbers for all remaining stops
+    for idx, stop in enumerate(transport.Stops, start=1):
+        stop.Sequence = idx
 
     if removed_count > 0:
         print(f"Successfully removed {removed_count} shipment(s) from Transport '{transport_id}'.")
@@ -352,8 +414,35 @@ def Transport_remove(transport_id, shipment_ids):
     return transport
 
 # Load data
-shipments_df = pd.read_csv(os.path.join(BASE_DIR, 'all_shipments.csv'))
+shipments_df = pd.read_csv(os.path.join(BASE_DIR, 'df_shipments.csv'))
+# Convert postal codes to integers to avoid decimal display
+# Strip spaces first before converting
+if 'Collection_Postal_Code' in shipments_df.columns:
+    shipments_df['Collection_Postal_Code'] = shipments_df['Collection_Postal_Code'].astype(str).str.replace(' ', '', regex=False)
+    shipments_df['Collection_Postal_Code'] = pd.to_numeric(shipments_df['Collection_Postal_Code'], errors='coerce').fillna(0).astype(int)
+if 'Delivery_Postal_Code' in shipments_df.columns:
+    shipments_df['Delivery_Postal_Code'] = shipments_df['Delivery_Postal_Code'].astype(str).str.replace(' ', '', regex=False)
+    shipments_df['Delivery_Postal_Code'] = pd.to_numeric(shipments_df['Delivery_Postal_Code'], errors='coerce').fillna(0).astype(int)
 trucks_df = pd.read_csv(os.path.join(BASE_DIR, 'df_trucks.csv'))
+if 'Sheet' not in trucks_df.columns:
+    trucks_df['Sheet'] = 1
+# Generate random times between 06:00 and 20:00 for each truck
+if 'Time' not in trucks_df.columns or trucks_df['Time'].isnull().any():
+    import random
+    def generate_random_time():
+        hour = random.randint(6, 19)
+        minute = random.choice([0, 15, 30, 45])
+        return f"{hour:02d}:{minute:02d}"
+    trucks_df['Time'] = [generate_random_time() for _ in range(len(trucks_df))]
+# Generate random dates for current week (weekdays only)
+if 'Date' not in trucks_df.columns or trucks_df['Date'].isnull().any():
+    import random
+    today = datetime.date.today()
+    # Find Monday of current week
+    monday = today - datetime.timedelta(days=today.weekday())
+    # Generate list of weekdays (Mon-Fri) for current week
+    weekdays = [monday + datetime.timedelta(days=i) for i in range(5)]
+    trucks_df['Date'] = [random.choice(weekdays) for _ in range(len(trucks_df))]
 trailers_df = pd.read_csv(os.path.join(BASE_DIR, 'df_trailers.csv'))
 
 # Combine trucks and trailers as transports
@@ -364,9 +453,13 @@ for _, row in shipments_df.iterrows():
     Shipment(
         row['Shipment_ID'], row['Transport'], row['Department'], row['Pickup_time'], row['Pickup_date'],
         row['Delivery_time'], row['Delivery_date'], row['Collection_Name'], row['Collection_City'],
-        row['Collection_Address'], row['Collection_Postal_Code'], row['Delivery_Name'], row['Delivery_City'],
-        row['Delivery_Address'], row['Delivery_Postal_Code'], row['Weight'], row['Volume'], row['Ldm'],
-        row['Content'], row['Units'], row['Unit_type'], row['Hazardous'], row['Cost']
+        row['Collection_Address'], row['Collection_Postal_Code'], row['Collection_Country'],
+        row['Delivery_Name'], row['Delivery_City'], row['Delivery_Address'], row['Delivery_Postal_Code'],
+        row['Delivery_Country'], row['Weight'], row['Volume'], row['Ldm'],
+        row['Content'], row['Units'], row['Unit_type'], row['Hazardous'], row['Cost'],
+        row.get('Finance_Department', ''), row.get('Incoterm', ''), row.get('Customer', ''),
+        row.get('Loading_Instructions', ''), row.get('Customer_Reference', ''), 
+        row.get('Additional_Information', ''), row.get('Services', [])
     )
 
 @app.route('/')
@@ -377,6 +470,11 @@ def index():
 def shipments():
     # Start with the full dataframe
     filtered_df = shipments_df.copy()
+    
+    # Apply department filter (defaults to KDEGR)
+    department = request.args.get('department', 'KDEGR').strip()
+    if department and department != 'ALL':
+        filtered_df = filtered_df[filtered_df['Department'] == department]
     
     # Apply unassigned filter by default, unless explicitly set to 'all'
     filter_param = request.args.get('filter', 'unassigned')
@@ -389,8 +487,9 @@ def shipments():
     if shipment_id:
         filtered_df = filtered_df[filtered_df['Shipment_ID'].str.contains(shipment_id, case=False, na=False)]
     
-    # Parse postal code ranges (e.g., "2700-3500" or "2700-3500,4000-5000")
-    def parse_pc_ranges(pc_string, column_name):
+    # Parse postal code ranges with optional country codes
+    # Supports: "BE:2700-3500", "NL:1000-2000,BE:2700-3500", "BE", or "2700-3500"
+    def parse_pc_ranges(pc_string, column_name, country_column_name):
         if not pc_string:
             return filtered_df
         
@@ -399,25 +498,53 @@ def shipments():
         
         for range_str in ranges:
             range_str = range_str.strip()
-            if '-' in range_str:
-                parts = range_str.split('-')
+            country_code = None
+            postal_range = None
+            
+            # Check if country code is specified (e.g., "BE:2700-3500" or just "BE")
+            if ':' in range_str:
+                parts = range_str.split(':', 1)
+                country_code = parts[0].strip().upper()
+                postal_range = parts[1].strip() if len(parts) > 1 and parts[1].strip() else None
+            else:
+                # Check if it's just a country code (2-3 letters) or a postal code range
+                if range_str.replace('-', '').replace(' ', '').isalpha() and len(range_str) <= 3:
+                    country_code = range_str.upper()
+                    postal_range = None
+                else:
+                    postal_range = range_str
+            
+            # Build country mask
+            country_mask = pd.Series([True] * len(filtered_df), index=filtered_df.index)
+            if country_code:
+                country_mask = (filtered_df[country_column_name].str.upper() == country_code)
+            
+            # Parse postal code range
+            if postal_range and '-' in postal_range:
+                parts = postal_range.split('-')
                 if len(parts) == 2:
                     try:
                         min_val = int(parts[0].strip())
                         max_val = int(parts[1].strip())
-                        mask |= (filtered_df[column_name] >= min_val) & (filtered_df[column_name] <= max_val)
+                        # Convert postal codes to int for comparison, stripping spaces first
+                        pc_stripped = filtered_df[column_name].astype(str).str.replace(' ', '', regex=False)
+                        pc_as_int = pd.to_numeric(pc_stripped, errors='coerce')
+                        mask |= country_mask & (pc_as_int >= min_val) & (pc_as_int <= max_val)
                     except ValueError:
                         pass
+            elif country_code and not postal_range:
+                # Just country code without postal code range
+                mask |= country_mask
         
         return filtered_df[mask] if mask.any() else filtered_df
     
     collection_pc = request.args.get('collection_pc', '').strip()
     if collection_pc:
-        filtered_df = parse_pc_ranges(collection_pc, 'Collection_Postal_Code')
+        filtered_df = parse_pc_ranges(collection_pc, 'Collection_Postal_Code', 'Collection_Country')
     
     delivery_pc = request.args.get('delivery_pc', '').strip()
     if delivery_pc:
-        filtered_df = parse_pc_ranges(delivery_pc, 'Delivery_Postal_Code')
+        filtered_df = parse_pc_ranges(delivery_pc, 'Delivery_Postal_Code', 'Delivery_Country')
     
     # Apply date range filter (from start_date to start_date + X days, negative values go backwards)
     # Default to 0 days if not specified (show only today)
@@ -460,42 +587,89 @@ def transports():
     all_transports = list(Transport.registry.values())
     filtered_transports = all_transports.copy()
     
+    # Apply department filter (defaults to KDEGR)
+    department = request.args.get('department', 'KDEGR').strip()
+    if department and department != 'ALL':
+        filtered_transports = [t for t in filtered_transports if t.Department == department]
+    
     # Apply search filters
     transport_id = request.args.get('transport_id', '').strip()
     if transport_id:
         filtered_transports = [t for t in filtered_transports if transport_id.lower() in t.Transport_ID.lower()]
     
-    # Parse postal code ranges for first and last stop
-    def matches_pc_ranges(pc_value, pc_string):
+    # Parse postal code ranges with optional country codes for first and last stop
+    # Supports: "BE:2700-3500", "NL:1000-2000,BE:2700-3500", "BE", or "2700-3500"
+    def matches_pc_ranges(pc_value, country_value, pc_string):
         if not pc_string:
             return True
         if pc_value is None:
             return False
         
+        # Convert pc_value to int if it's a string, stripping spaces first
+        try:
+            pc_value_str = str(pc_value).replace(' ', '')
+            pc_value_int = int(pc_value_str)
+        except (ValueError, TypeError):
+            return False
+        
         ranges = pc_string.split(',')
         for range_str in ranges:
             range_str = range_str.strip()
-            if '-' in range_str:
-                parts = range_str.split('-')
+            country_code = None
+            postal_range = None
+            
+            # Check if country code is specified (e.g., "BE:2700-3500" or just "BE")
+            if ':' in range_str:
+                parts = range_str.split(':', 1)
+                country_code = parts[0].strip().upper()
+                postal_range = parts[1].strip() if len(parts) > 1 and parts[1].strip() else None
+            else:
+                # Check if it's just a country code (2-3 letters) or a postal code range
+                if range_str.replace('-', '').replace(' ', '').isalpha() and len(range_str) <= 3:
+                    country_code = range_str.upper()
+                    postal_range = None
+                else:
+                    postal_range = range_str
+            
+            # Check country match
+            country_matches = True
+            if country_code:
+                country_matches = (country_value and country_value.upper() == country_code)
+            
+            if not country_matches:
+                continue
+            
+            # Parse postal code range
+            if postal_range and '-' in postal_range:
+                parts = postal_range.split('-')
                 if len(parts) == 2:
                     try:
                         min_val = int(parts[0].strip())
                         max_val = int(parts[1].strip())
-                        if min_val <= pc_value <= max_val:
+                        if min_val <= pc_value_int <= max_val:
                             return True
                     except ValueError:
                         pass
+            elif country_code and not postal_range:
+                # Just country code without postal code range
+                return True
         return False
     
     collection_pc = request.args.get('collection_pc', '').strip()
     if collection_pc:
         filtered_transports = [t for t in filtered_transports 
-                              if t.Stops and matches_pc_ranges(t.Stops[0].Postal_Code if t.Stops else None, collection_pc)]
+                              if t.Stops and matches_pc_ranges(
+                                  t.Stops[0].Postal_Code if t.Stops else None,
+                                  t.Stops[0].Country if t.Stops else None,
+                                  collection_pc)]
     
     delivery_pc = request.args.get('delivery_pc', '').strip()
     if delivery_pc:
         filtered_transports = [t for t in filtered_transports 
-                              if t.Stops and matches_pc_ranges(t.Stops[-1].Postal_Code if t.Stops else None, delivery_pc)]
+                              if t.Stops and matches_pc_ranges(
+                                  t.Stops[-1].Postal_Code if t.Stops else None,
+                                  t.Stops[-1].Country if t.Stops else None,
+                                  delivery_pc)]
     
     # Apply date range filter
     date_range_days = request.args.get('date_range_days', '').strip()
@@ -524,13 +698,22 @@ def transports():
     # Prepare transport data with additional stop information
     transports_list = []
     for transport in filtered_transports:
+        first_stop = transport.Stops[0] if transport.Stops else None
+        last_stop = transport.Stops[-1] if transport.Stops else None
         transport_data = {
             'Transport_ID': transport.Transport_ID,
             'Ldm': transport.Ldm,
-            'first_stop_date': transport.Stops[0].Date if transport.Stops else '',
-            'first_stop_time': transport.Stops[0].Time if transport.Stops else '',
-            'last_stop_date': transport.Stops[-1].Date if transport.Stops else '',
-            'last_stop_time': transport.Stops[-1].Time if transport.Stops else ''
+            'Weight': transport.Weight,
+            'Cost': transport.Cost,
+            'Sale': transport.Sale,
+            'first_stop_date': first_stop.Date if first_stop else '',
+            'first_stop_time': first_stop.Time if first_stop else '',
+            'first_collection_country': first_stop.shipment.Collection_Country if first_stop else '',
+            'first_collection_postal': first_stop.shipment.Collection_Postal_Code if first_stop else '',
+            'last_stop_date': last_stop.Date if last_stop else '',
+            'last_stop_time': last_stop.Time if last_stop else '',
+            'last_delivery_country': last_stop.shipment.Delivery_Country if last_stop else '',
+            'last_delivery_postal': last_stop.shipment.Delivery_Postal_Code if last_stop else ''
         }
         transports_list.append(transport_data)
     
@@ -612,76 +795,463 @@ def add_shipment():
 def remove_shipment():
     try:
         data = request.get_json()
-        transport_id = data['transport']
         shipment_ids = data['shipments']
-        transport = Transport_remove(transport_id, shipment_ids)
+        transport = Transport_remove(shipment_ids)
         if transport:
             # Update shipments_df to set Transport to None for removed shipments
             for sid in shipment_ids:
                 shipments_df.loc[shipments_df['Shipment_ID'] == sid, 'Transport'] = None
-            return jsonify({'message': f'Shipments removed from transport {transport_id}'})
+            return jsonify({'message': f'Shipments removed from transport {transport.Transport_ID}'})
         else:
             return jsonify({'message': 'Transport not found'}), 404
     except Exception as e:
         print("Error in remove_shipment:", e)
         return jsonify({'message': f'Error: {str(e)}'}), 500
 
+@app.route('/sell_shipment_transport', methods=['POST'])
+def sell_shipment_transport():
+    try:
+        data = request.get_json()
+        shipment_ids = data.get('shipments', [])
+        transport_id = data.get('transport', None)
+        sale_cost = data.get('sale_cost', 0.0)
+        
+        if transport_id:
+            # Set Sale = True for the selected transport
+            transport = Transport.get_by_id(transport_id)
+            if transport:
+                transport.Sale = True
+                transport.Sale_cost = sale_cost
+                return jsonify({'message': f'Transport {transport_id} marked for sale with cost {sale_cost}'})
+            else:
+                return jsonify({'message': 'Transport not found'}), 404
+        elif shipment_ids:
+            # Create a transport from shipments and set Sale = True
+            selected_df = shipments_df[shipments_df['Shipment_ID'].isin(shipment_ids)]
+            transport = Transport_create(selected_df)
+            transport.Sale = True
+            transport.Sale_cost = sale_cost
+            # Update shipments_df
+            for sid in shipment_ids:
+                shipments_df.loc[shipments_df['Shipment_ID'] == sid, 'Transport'] = transport.Transport_ID
+            return jsonify({'message': f'Transport {transport.Transport_ID} created and marked for sale with cost {sale_cost}'})
+        else:
+            return jsonify({'message': 'No shipments or transport selected'}), 400
+    except Exception as e:
+        print("Error in sell_shipment_transport:", e)
+        return jsonify({'message': f'Error: {str(e)}'}), 500
+
+@app.route('/get_transport_info')
+def get_transport_info():
+    transport_id = request.args.get('transport_id', '')
+    if transport_id:
+        transport = Transport.get_by_id(transport_id)
+        if transport:
+            return jsonify({
+                'transport_id': transport.Transport_ID,
+                'shipments': transport.Shipments
+            })
+    return jsonify({'error': 'Transport not found'}), 404
+
 @app.route('/planning')
 def planning():
-    trucks_list = trucks_df.to_dict('records')
-    transports_list = []
+    # Get filter parameters
+    department = request.args.get('department', 'KDEGR').strip()
+    start_date_str = request.args.get('start_date', '').strip()
+    date_range_days = request.args.get('date_range_days', '0').strip()
     
-    for transport in Transport.registry.values():
-        # Get first stop's location and time
-        first_stop_location = ''
-        first_stop_time = ''
-        if transport.Stops:
-            first_stop = transport.Stops[0]
-            first_stop_location = f"{first_stop.City} {first_stop.Postal_Code}"
-            first_stop_time = first_stop.Time
-        
-        # Create transport dict with additional fields
-        transport_dict = {
-            'Transport_ID': transport.Transport_ID,
-            'Department': transport.Department,
-            'Pickup_date': transport.Pickup_date,
-            'Delivery_date': transport.Delivery_date,
+    # Filter trucks by department
+    if department and department != 'ALL':
+        filtered_trucks_df = trucks_df[trucks_df['Department'] == department]
+    else:
+        filtered_trucks_df = trucks_df.copy()
+    
+    # Apply date range filter to trucks
+    if date_range_days:
+        try:
+            days = int(date_range_days)
+            if start_date_str:
+                start_date = pd.to_datetime(start_date_str).date()
+            else:
+                start_date = datetime.date.today()
+            
+            if days >= 0:
+                end_date = start_date + datetime.timedelta(days=days)
+            else:
+                end_date = start_date
+                start_date = start_date + datetime.timedelta(days=days)
+            
+            # Filter trucks by date range
+            filtered_trucks_df['Date'] = pd.to_datetime(filtered_trucks_df['Date']).dt.date
+            filtered_trucks_df = filtered_trucks_df[
+                (filtered_trucks_df['Date'] >= start_date) & 
+                (filtered_trucks_df['Date'] <= end_date)
+            ]
+        except (ValueError, AttributeError, TypeError, KeyError):
+            pass
+    
+    # Filter out trucks that already have a Transport assigned
+    filtered_trucks_df = filtered_trucks_df[
+        (filtered_trucks_df['Transport'].isna()) | 
+        (filtered_trucks_df['Transport'] == '')
+    ]
+    
+    trucks_list = filtered_trucks_df.to_dict('records')
+    
+    # Start with all transports
+    all_transports = list(Transport.registry.values())
+    filtered_transports = all_transports.copy()
+    
+    # Apply department filter
+    if department and department != 'ALL':
+        filtered_transports = [t for t in filtered_transports if t.Department == department]
+    
+    # Apply date range filter to transports
+    if date_range_days:
+        try:
+            days = int(date_range_days)
+            if start_date_str:
+                start_date = pd.to_datetime(start_date_str).date()
+            else:
+                start_date = datetime.date.today()
+            
+            if days >= 0:
+                end_date = start_date + datetime.timedelta(days=days)
+                filtered_transports = [t for t in filtered_transports 
+                                      if hasattr(t, 'Pickup_date') and start_date <= t.Pickup_date <= end_date]
+            else:
+                end_date = start_date
+                start_date = start_date + datetime.timedelta(days=days)
+                filtered_transports = [t for t in filtered_transports 
+                                      if hasattr(t, 'Pickup_date') and start_date <= t.Pickup_date <= end_date]
+        except (ValueError, AttributeError, TypeError):
+            pass
+    
+    # Combine transports and trucks into a single table
+    combined_list = []
+    
+    # Add transports to combined list
+    for transport in filtered_transports:
+        first_stop = transport.Stops[0] if transport.Stops else None
+        location_str = ''
+        if first_stop:
+            country = first_stop.Country if first_stop.Country else ''
+            postal = str(first_stop.Postal_Code) if first_stop.Postal_Code else ''
+            city = first_stop.City if first_stop.City else ''
+            location_str = f"{country} {postal} {city}"
+        combined_item = {
+            'Type': 'Transport',
+            'ID': transport.Transport_ID,
+            'Location': location_str,
+            'Time': first_stop.Time if first_stop else '',
+            'Date': transport.Pickup_date,
+            'License_Plate': transport.Vehicle,
+            'Driver': transport.Driver,
+            'Trailer': transport.Trailer,
+            'Haulier': transport.Haulier,
             'Weight': transport.Weight,
-            'Volume': transport.Volume,
             'Ldm': transport.Ldm,
             'Cost': transport.Cost,
-            'Status': transport.Status,
-            'Vehicle': transport.Vehicle,
-            'Haulier': transport.Haulier,
-            'Driver': transport.Driver,
-            'first_stop_location': first_stop_location,
-            'first_stop_time': first_stop_time
+            'Sale': transport.Sale,
+            'Department': transport.Department
         }
-        transports_list.append(transport_dict)
+        combined_list.append(combined_item)
     
-    return render_template('planning.html', trucks=trucks_list, transports=transports_list)
+    # Add trucks to combined list
+    for truck in trucks_list:
+        # Parse and format location
+        location_raw = truck.get('Location', '')
+        location_str = ''
+        if location_raw:
+            if ',' in location_raw:
+                # Format: "City, PostalCode, CountryCode" -> "CountryCode PostalCode City"
+                parts = [p.strip() for p in location_raw.split(',')]
+                if len(parts) == 3:
+                    city, postal, country = parts
+                    location_str = f"{country} {postal} {city}"
+                else:
+                    location_str = location_raw
+            elif '-' in location_raw:
+                # Format: "DK-9300" -> "DK 9300"
+                parts = location_raw.split('-')
+                if len(parts) == 2:
+                    location_str = f"{parts[0]} {parts[1]}"
+                else:
+                    location_str = location_raw
+            else:
+                location_str = location_raw
+        
+        combined_item = {
+            'Type': 'Truck',
+            'ID': truck.get('License_plate', ''),
+            'Location': location_str,
+            'Time': truck.get('Time', ''),
+            'Date': truck.get('Date', ''),
+            'License_Plate': truck.get('License_plate', ''),
+            'Driver': truck.get('Driver', ''),
+            'Trailer': truck.get('Trailer', ''),
+            'Haulier': truck.get('Haulier', ''),
+            'Weight': '',
+            'Ldm': '',
+            'Cost': '',
+            'Sale': '',
+            'Department': truck.get('Department', '')
+        }
+        combined_list.append(combined_item)
+    
+    # Sort by Time descending
+    combined_list.sort(key=lambda x: x['Time'] if x['Time'] else '', reverse=True)
+    
+    return render_template('planning.html', combined_items=combined_list)
 
 @app.route('/planning/stops/<type>/<id>')
 def planning_stops(type, id):
     if type == 'transport':
         transport = Transport.get_by_id(id)
-        if transport and transport.Stops:
+        if transport:
+            # Return full transport overview data
+            transport_data = {
+                'Transport_ID': transport.Transport_ID,
+                'Department': transport.Department,
+                'Shipments': transport.Shipments,
+                'Pickup_date': str(transport.Pickup_date) if transport.Pickup_date else '',
+                'Delivery_date': str(transport.Delivery_date) if transport.Delivery_date else '',
+                'Weight': float(transport.Weight) if transport.Weight else 0,
+                'Volume': float(transport.Volume) if transport.Volume else 0,
+                'Ldm': float(transport.Ldm) if transport.Ldm else 0,
+                'Cost': float(transport.Cost) if transport.Cost else 0,
+                'Status': transport.Status,
+                'Vehicle': transport.Vehicle,
+                'Haulier': transport.Haulier,
+                'Driver': transport.Driver,
+                'Trailer': transport.Trailer
+            }
+            
+            # Get stops data
             stops_data = []
-            for stop in transport.Stops:
-                stops_data.append({
-                    'Type': stop.Type,
-                    'Name': stop.Name,
-                    'Address': stop.Address,
-                    'City': stop.City,
-                    'Postal_Code': stop.Postal_Code,
-                    'Date': stop.Date,
-                    'Time': stop.Time,
-                    'Weight': stop.Weight,
-                    'Volume': stop.Volume,
-                    'Ldm': stop.Ldm
-                })
-            return jsonify({'stops': stops_data})
-    return jsonify({'stops': []})
+            if transport.Stops:
+                for stop in transport.Stops:
+                    stops_data.append({
+                        'ID': stop.ID,
+                        'Type': stop.Type,
+                        'Sequence': int(stop.Sequence) if stop.Sequence else 0,
+                        'Shipment_ID': stop.shipment.Shipment_ID if stop.shipment else '',
+                        'Country': stop.Country,
+                        'Postal_Code': int(stop.Postal_Code) if stop.Postal_Code else 0,
+                        'City': stop.City,
+                        'Name': stop.Name,
+                        'Address': stop.Address,
+                        'Date': str(stop.Date) if stop.Date else '',
+                        'Time': stop.Time,
+                        'Weight': float(stop.Weight) if stop.Weight else 0,
+                        'Volume': float(stop.Volume) if stop.Volume else 0,
+                        'Ldm': float(stop.Ldm) if stop.Ldm else 0
+                    })
+            
+            return jsonify({'transport': transport_data, 'stops': stops_data})
+    return jsonify({'transport': None, 'stops': []})
+
+@app.route('/reorder_stops', methods=['POST'])
+def reorder_stops():
+    try:
+        data = request.get_json()
+        transport_id = data['transport_id']
+        stop_id = data['stop_id']
+        new_sequence = int(data['new_sequence'])
+        
+        transport = Transport.get_by_id(transport_id)
+        if not transport:
+            return jsonify({'error': 'Transport not found'}), 404
+        
+        # Find the stop to move
+        stop_to_move = None
+        old_sequence = 0
+        for stop in transport.Stops:
+            if stop.ID == stop_id:
+                stop_to_move = stop
+                old_sequence = stop.Sequence
+                break
+        
+        if not stop_to_move:
+            return jsonify({'error': 'Stop not found'}), 404
+        
+        # Validate new sequence
+        if new_sequence < 1 or new_sequence > len(transport.Stops):
+            return jsonify({'error': f'Invalid sequence number. Must be between 1 and {len(transport.Stops)}'}), 400
+        
+        # Update sequence numbers without changing positions
+        if new_sequence != old_sequence:
+            # If moving up (increasing sequence number)
+            if new_sequence > old_sequence:
+                # All stops between old and new position shift down by 1
+                for stop in transport.Stops:
+                    if stop.Sequence > old_sequence and stop.Sequence <= new_sequence:
+                        stop.Sequence -= 1
+            # If moving down (decreasing sequence number)
+            else:
+                # All stops between new and old position shift up by 1
+                for stop in transport.Stops:
+                    if stop.Sequence >= new_sequence and stop.Sequence < old_sequence:
+                        stop.Sequence += 1
+            
+            # Set the new sequence for the moved stop
+            stop_to_move.Sequence = new_sequence
+        
+        # Return updated stops data
+        stops_data = []
+        for stop in transport.Stops:
+            stops_data.append({
+                'ID': stop.ID,
+                'Type': stop.Type,
+                'Sequence': stop.Sequence,
+                'Shipment_ID': stop.shipment.Shipment_ID,
+                'Country': stop.Country,
+                'Postal_Code': stop.Postal_Code,
+                'City': stop.City
+            })
+        
+        return jsonify({'message': 'Stop reordered successfully', 'stops': stops_data})
+    
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/update_truck_time', methods=['POST'])
+def update_truck_time():
+    try:
+        data = request.json
+        license_plate = data.get('license_plate')
+        new_time = data.get('time')
+        
+        if not license_plate:
+            return jsonify({'success': False, 'error': 'License plate required'}), 400
+        
+        # Update in the DataFrame
+        global trucks_df
+        mask = trucks_df['License_plate'] == license_plate
+        if not mask.any():
+            return jsonify({'success': False, 'error': 'Truck not found'}), 404
+        
+        trucks_df.loc[mask, 'Time'] = new_time
+        
+        # Save to CSV
+        trucks_df.to_csv('Backend_Mobility/df_trucks.csv', index=False)
+        
+        return jsonify({'success': True})
+    
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/update_transport_time', methods=['POST'])
+def update_transport_time():
+    try:
+        data = request.json
+        transport_id = data.get('transport_id')
+        new_time = data.get('time')
+        
+        if not transport_id:
+            return jsonify({'success': False, 'error': 'Transport ID required'}), 400
+        
+        # Get the transport object
+        transport = Transport.get_by_id(transport_id)
+        if not transport:
+            return jsonify({'success': False, 'error': 'Transport not found'}), 404
+        
+        # Update the time for the first stop (which is used for display)
+        if transport.Stops and len(transport.Stops) > 0:
+            transport.Stops[0].Time = new_time
+        
+        return jsonify({'success': True})
+    
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/assign_transport', methods=['POST'])
+def assign_transport():
+    try:
+        data = request.json
+        transport_id = data.get('transport_id')
+        truck_id = data.get('truck_id')
+        
+        if not transport_id or not truck_id:
+            return jsonify({'success': False, 'error': 'Both transport_id and truck_id are required'}), 400
+        
+        # Get the transport object
+        transport = Transport.get_by_id(transport_id)
+        if not transport:
+            return jsonify({'success': False, 'error': 'Transport not found'}), 404
+        
+        # Check if transport already has a vehicle
+        if transport.Vehicle != "":
+            return jsonify({'success': False, 'error': 'Transport already has a vehicle assigned'}), 400
+        
+        # Get truck from DataFrame
+        global trucks_df
+        truck_mask = trucks_df['License_plate'] == truck_id
+        if not truck_mask.any():
+            return jsonify({'success': False, 'error': 'Truck not found'}), 404
+        
+        truck_row = trucks_df[truck_mask].iloc[0]
+        
+        # Update Transport object (convert pandas types to Python native types)
+        transport.Vehicle = str(truck_row['License_plate']) if pd.notna(truck_row['License_plate']) else ""
+        transport.Driver = str(truck_row['Driver']) if pd.notna(truck_row['Driver']) else ""
+        if transport.Trailer == "":
+            transport.Trailer = str(truck_row['Trailer']) if pd.notna(truck_row['Trailer']) else ""
+        transport.Haulier = str(truck_row['Haulier']) if pd.notna(truck_row['Haulier']) else ""
+        
+        # Update Truck in DataFrame
+        trucks_df.loc[truck_mask, 'Transport'] = transport.Transport_ID
+        if transport.Trailer != "":
+            trucks_df.loc[truck_mask, 'Trailer'] = transport.Trailer
+        
+        # Save to CSV
+        trucks_df.to_csv('Backend_Mobility/df_trucks.csv', index=False)
+        
+        return jsonify({'success': True})
+    
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/unassign_transport', methods=['POST'])
+def unassign_transport():
+    try:
+        data = request.json
+        transport_id = data.get('transport_id')
+        
+        if not transport_id:
+            return jsonify({'success': False, 'error': 'Transport ID required'}), 400
+        
+        # Get the transport object
+        transport = Transport.get_by_id(transport_id)
+        if not transport:
+            return jsonify({'success': False, 'error': 'Transport not found'}), 404
+        
+        # Check if transport has a vehicle assigned
+        if transport.Vehicle == "":
+            return jsonify({'success': False, 'error': 'Transport does not have a vehicle assigned'}), 400
+        
+        truck_license = transport.Vehicle
+        
+        # Update Transport object
+        transport.Vehicle = ""
+        transport.Driver = ""
+        transport.Haulier = ""
+        transport.Trailer = ""
+        
+        # Update Truck in DataFrame
+        global trucks_df
+        truck_mask = trucks_df['License_plate'] == truck_license
+        if truck_mask.any():
+            trucks_df.loc[truck_mask, 'Transport'] = ""
+            # Truck trailer is not changed as per the function specification
+            
+            # Save to CSV
+            trucks_df.to_csv('Backend_Mobility/df_trucks.csv', index=False)
+        
+        return jsonify({'success': True})
+    
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)

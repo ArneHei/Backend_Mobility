@@ -1,61 +1,151 @@
-License_plate,Driver,Trailer,Phone,Haulier,Time,Date,Location,Transport,Department,Pay_type,Pay_amount
-XA99316,Hanne Nørgaard,,+45 75544158,Jas Kurerservice,,,DK-2100,,TEST1,,0.0
-GV13663,Hanne Christensen,,+45 90467908,Jas Kurerservice,,,DK-6500,,TEST1,,0.0
-WG92816,Oliver Winther,,+45 03022108,LL-Transport ApS,,,DK-4500,,TEST1,,0.0
-XL00796,Christian Rasmussen,,+45 50868054,Erling E Christoffersen,,,DK-8700,,TEST1,,0.0
-UC59923,Thomas Bach,,+45 50294726,The Kings Transport ApS,,,DK-9700,,TEST1,,0.0
-FS63995,Noah Bach,,+45 66118540,LL-Transport ApS,,,DK-2100,,TEST1,,0.0
-AG79819,Lars Berg,,+45 19561350,AK NEMT TRANSPORT APS,,,DK-2700,,TEST1,,0.0
-IK68243,Søren Dam,,+45 35114766,DSV ROAD A/S,,,DK-2500,,TEST1,,0.0
-SC00277,Lucas Carlsen,,+45 87614218,Jas Kurerservice,,,DK-2400,,TEST1,,0.0
-TN67727,Magnus Madsen,,+45 93214193,DSV ROAD A/S,,,DK-9600,,TEST1,,0.0
-ZU30037,Mathias Schmidt,,+45 40622095,AK NEMT TRANSPORT APS,,,DK-5300,,TEST1,,0.0
-CC30947,Gustav Pedersen,,+45 06274799,Torben Jørgensen Eftf. ApS,,,DK-5400,,TEST1,,0.0
-ZX60577,Camilla Hansen,,+45 78540855,TN Transport A/S,,,DK-4500,,TEST1,,0.0
-QS07578,Thomas Juul,,+45 66657000,Kjærgaard og Kjærsgaard Distribution,,,DK-8000,,TEST1,,0.0
-DZ52240,Thomas Jensen,,+45 37418442,Køl og Frys Transport APS,,,DK-8500,,TEST1,,0.0
-XY82728,Mikkel Møller,,+45 14620389,The Kings Transport ApS,,,DK-6500,,TEST1,,0.0
-IR97984,Victor Møller,,+45 46507563,DSV ROAD A/S,,,DK-4400,,TEST1,,0.0
-ZU82383,Mathias Koch,,+45 42258062,Vognmand Jørgen Borup,,,DK-5200,,TEST1,,0.0
-DV46138,Peter Møller,,+45 00758348,TN Transport A/S,,,DK-4700,,TEST1,,0.0
-JF24549,Lars Brandt,,+45 49612787,Jas Kurerservice,,,DK-4200,,TEST1,,0.0
-ZV69379,Emil Koch,,+45 66168454,ATEA,,,DK-6900,,TEST1,,0.0
-SZ45695,Noah Winther,,+45 66615137,Dilligencen ApS,,,DK-7900,,TEST1,,0.0
-EC15179,August Due,,+45 35859348,Kjærgaard og Kjærsgaard Distribution,,,DK-6800,,TEST1,,0.0
-CR42533,Tobias Winther,,+45 75852751,D S Promotion ApS,,,DK-4300,,TEST1,,0.0
-IK98633,Peter Vestergaard,,+45 59148223,Kjærgaard og Kjærsgaard Distribution,,,DK-8400,,TEST1,,0.0
-KY41967,Kirsten Koch,,+45 31428473,BIH Trans,,,DK-3100,,TEST1,,0.0
-ND68339,Albert Bech,,+45 98477843,Compass,,,DK-3700,,TEST1,,0.0
-DW13719,Michael Nielsen,,+45 18986790,DSV ROAD A/S,,,DK-2600,,TEST1,,0.0
-BE93736,Anton Larsen,,+45 81775634,Dilligencen ApS,,,DK-4000,,TEST1,,0.0
-MT33103,Emil Juul,,+45 57045191,TN Transport A/S,,,DK-2700,,TEST1,,0.0
-MC55215,Gustav Sørensen,RB6987,+45 56847142,Compass,,,DK-3200,,TEST1,,0.0
-HX16746,Anders Poulsen,YZ8300,+45 36298968,AK NEMT TRANSPORT APS,,,DK-6900,,TEST1,,0.0
-VQ75494,Elias Kristensen,VL1638,+45 91749965,Dilligencen ApS,,,DK-6200,,TEST1,,0.0
-OW48316,Rasmus Christensen,KN1984,+45 99360626,Compass,,,DK-9400,,TEST1,,0.0
-VE44038,Henrik Bech,YS0287,+45 82567571,Jas Kurerservice,,,DK-7500,,TEST1,,0.0
-XX51286,Henrik Bach,LY5794,+45 77503377,Torben Jørgensen Eftf. ApS,,,DK-2100,,TEST1,,0.0
-HW82371,Noah Petersen,WC8195,+45 43794807,LL-Transport ApS,,,DK-3600,,TEST1,,0.0
-RX99388,Rasmus Hansen,TV3743,+45 14775067,Kjærgaard og Kjærsgaard Distribution,,,DK-3200,,TEST1,,0.0
-FQ16238,Lone Hedegaard,XK3679,+45 10243004,Jas Kurerservice,,,DK-5600,,TEST1,,0.0
-JF87844,Albert Fisker,UJ4401,+45 98344869,LL-Transport ApS,,,DK-4700,,TEST1,,0.0
-DP05429,Victor Juul,PP1053,+45 21926098,Køl og Frys Transport APS,,,DK-3500,,TEST1,,0.0
-JN65218,Malte Møller,XE6642,+45 67841805,Vognmand Jørgen Borup,,,DK-8500,,TEST1,,0.0
-MZ77394,August Winther,RO9906,+45 92495522,D S Promotion ApS,,,DK-9900,,TEST1,,0.0
-YK77610,Oliver Andersen,WP5195,+45 28113410,Rc Transport ApS,,,DK-4000,,TEST1,,0.0
-BW22465,August Nørgaard,DY1617,+45 35862798,TN Transport A/S,,,DK-7700,,TEST1,,0.0
-XY40441,Susanne Sørensen,EI9586,+45 01998327,Torben Jørgensen Eftf. ApS,,,DK-7900,,TEST1,,0.0
-PC32332,Frederik Møller,PX2022,+45 39367897,ATEA,,,DK-5700,,TEST1,,0.0
-TM64139,Victor Kirk,BX4970,+45 91364866,AK NEMT TRANSPORT APS,,,DK-2300,,TEST1,,0.0
-ZK84807,Peter Hansen,SP4832,+45 89483986,BIH Trans,,,DK-4200,,TEST1,,0.0
-ED00150,Oscar Thomsen,VI7850,+45 70050481,BIH Trans,,,DK-4000,,TEST1,,0.0
-QT86973,Morten Sørensen,CI5674,+45 10207249,Vognmand Jørgen Borup,,,DK-4100,,TEST1,,0.0
-MS82176,Peter Kristensen,OK9467,+45 28860607,Vognmand Jørgen Borup,,,DK-8400,,TEST1,,0.0
-NJ17722,Noah Petersen,LF4648,+45 42031384,Compass,,,DK-6800,,TEST1,,0.0
-BP96469,Christian Dahl,SI0663,+45 79209804,Rc Transport ApS,,,DK-4900,,TEST1,,0.0
-RW01244,Camilla Olsen,AW7557,+45 62808441,Jas Kurerservice,,,DK-5100,,TEST1,,0.0
-HN53972,Anne Nørgaard,BO9848,+45 34321293,AK NEMT TRANSPORT APS,,,DK-8400,,TEST1,,0.0
-PA63845,Noah Sørensen,KT6970,+45 57084483,LL-Transport ApS,,,DK-9600,,TEST1,,0.0
-EO92291,Anders Dam,BN2545,+45 88293971,Dilligencen ApS,,,DK-6100,,TEST1,,0.0
-CE85560,Maria Poulsen,LF0217,+45 00627357,Køl og Frys Transport APS,,,DK-3700,,TEST1,,0.0
-DB10467,Tina Jensen,KI1461,+45 38525545,AK NEMT TRANSPORT APS,,,DK-2500,,TEST1,,0.0
+License_plate,Driver,Trailer,Phone,Haulier,Time,Date,Location,Transport,Department,Pay_type,Pay_amount,Sheet
+WF08864,Noah Dahl,,+45 98476345,Rc Transport ApS,15:15,2026-02-03,DK-9300,,NAESJ,,0.0,1
+HF13796,August Madsen,,+45 10383128,Compass,17:00,2026-02-02,DK-9700,,NAESJ,,0.0,1
+WL78494,Hanne Andersen,,+45 84241033,Jas Kurerservice,07:45,2026-02-02,DK-2400,,NAESJ,,0.0,1
+GE35076,Malte Schmidt,,+45 37668085,The Kings Transport ApS,12:30,2026-02-03,DK-9500,,NAESJ,,0.0,1
+TW61252,Malte Bach,,+45 96093507,Køl og Frys Transport APS,19:45,2026-02-03,DK-2200,,NAESJ,,0.0,1
+WX37288,Kirsten Bach,,+45 43488741,Køl og Frys Transport APS,08:30,2026-02-05,DK-9600,,NAESJ,,0.0,1
+WS62205,Anne Koch,,+45 91958923,DSV,13:30,2026-02-04,DK-3300,,NAESJ,,0.0,1
+VF70293,Rasmus Andersen,,+45 54761855,Kuehne+Nagel,14:00,2026-02-02,DK-3800,,NAESJ,,0.0,1
+ZA46161,Kirsten Winther,,+45 44387266,LL-Transport ApS,11:15,2026-02-04,DK-7300,,NAESJ,,0.0,1
+TE74555,August Due,,+45 43324129,LKW Walter,12:30,2026-02-03,DK-7300,,NAESJ,,0.0,1
+AY50549,Noah Nielsen,,+45 59380575,Kuehne+Nagel,07:45,2026-02-02,DK-3000,,NAESJ,,0.0,1
+SJ77461,Marianne Nielsen,,+45 67226889,Vognmand Jørgen Borup,16:45,2026-02-05,DK-4900,,NAESJ,,0.0,1
+TX96352,Lucas Kristensen,,+45 31607946,Hellmann Worldwide Logistics,07:15,2026-02-03,DK-3200,,NAESJ,,0.0,1
+LZ63732,Malte Jensen,,+45 94791188,D S Promotion ApS,06:15,2026-02-06,DK-2000,,NAESJ,,0.0,1
+DD72889,Jens Berg,,+45 82116364,BIH Trans,09:30,2026-02-02,DK-2700,,NAESJ,,0.0,1
+HI65427,Oscar Dahl,,+45 09951247,Rc Transport ApS,17:15,2026-02-04,DK-5300,,NAESJ,,0.0,1
+GZ14016,Gustav Andersen,,+45 74243713,LL-Transport ApS,13:00,2026-02-05,DK-5600,,NAESJ,,0.0,1
+DB17072,Kirsten Thomsen,,+45 40403031,Køl og Frys Transport APS,18:15,2026-02-02,DK-3300,,NAESJ,,0.0,1
+FZ43128,Jens Bang,,+45 74200994,Kjærgaard og Kjærsgaard Distribution,16:00,2026-02-06,DK-4100,,NAESJ,,0.0,1
+CH10606,Elias Møller,,+45 82096277,Girteka Logistics,19:15,2026-02-04,DK-2200,,NAESJ,,0.0,1
+DY48271,Hanne Pedersen,,+45 80708431,DB Schenker,19:30,2026-02-03,DK-4500,,NAESJ,,0.0,1
+QC60465,Rasmus Madsen,,+45 63124247,DSV,19:15,2026-02-03,DK-7400,,NAESJ,,0.0,1
+BQ05615,Mette Fisker,,+45 48050875,Hellmann Worldwide Logistics,14:15,2026-02-05,DK-2300,,NAESJ,,0.0,1
+IP49703,Hanne Bach,,+45 42056205,TN Transport A/S,10:45,2026-02-02,DK-6300,,NAESJ,,0.0,1
+ED08418,Mikkel Christensen,,+45 80299375,C.H. Robinson,09:00,2026-02-06,DK-6200,,NAESJ,,0.0,1
+GN78434,Tobias Berg,,+45 57906980,Girteka Logistics,14:30,2026-02-04,DK-3200,,NAESJ,,0.0,1
+CG04715,August Thomsen,,+45 32953346,DHL Freight,14:15,2026-02-02,DK-9200,,NAESJ,,0.0,1
+RP69483,Albert Poulsen,,+45 39306761,DB Schenker,17:15,2026-02-04,DK-7600,,NAESJ,,0.0,1
+RH95800,Anders Due,,+45 45880286,LKW Walter,06:15,2026-02-05,DK-8700,,NAESJ,,0.0,1
+SG30829,Hanne Kristensen,,+45 17641371,C.H. Robinson,11:45,2026-02-06,DK-9400,,NAESJ,,0.0,1
+QO39391,Tina Larsen,TD7450,+45 51285138,TN Transport A/S,06:15,2026-02-03,DK-3700,,NAESJ,,0.0,1
+NI68135,Lars Svendsen,PR3588,+45 34659836,DSV ROAD A/S,15:00,2026-02-06,DK-3400,,NAESJ,,0.0,1
+WV01309,Tobias Bang,OK1251,+45 50665118,DB Schenker,19:30,2026-02-06,DK-9800,,NAESJ,,0.0,1
+FJ01908,Mette Bech,QR5345,+45 67136942,Kjærgaard og Kjærsgaard Distribution,06:00,2026-02-02,DK-6900,,NAESJ,,0.0,1
+DK52077,Susanne Holm,CS1353,+45 54365537,GEODIS,12:45,2026-02-02,DK-4900,,NAESJ,,0.0,1
+UO99694,Peter Schmidt,GA8461,+45 00588687,XPO Logistics,19:00,2026-02-05,DK-8700,,NAESJ,,0.0,1
+VG66953,Anne Juul,NV1628,+45 47442799,DSV ROAD A/S,09:15,2026-02-05,DK-7900,,NAESJ,,0.0,1
+VR32635,Mikkel Madsen,VR2091,+45 85768755,Compass,16:15,2026-02-04,DK-2100,,NAESJ,,0.0,1
+CF21937,Mathias Kirk,GK4749,+45 08851814,The Kings Transport ApS,10:00,2026-02-02,DK-6800,,NAESJ,,0.0,1
+ED24871,Tina Andersen,QS2666,+45 78840624,Kuehne+Nagel,17:00,2026-02-06,DK-2600,,NAESJ,,0.0,1
+DB67594,Noah Eriksen,VZ9314,+45 59472425,D S Promotion ApS,09:15,2026-02-02,DK-4100,,NAESJ,,0.0,1
+JI71254,Søren Olsen,BM4264,+45 46587702,D S Promotion ApS,13:15,2026-02-05,DK-8000,,NAESJ,,0.0,1
+ZT68613,Mathias Nørgaard,SV2701,+45 31497315,Kjærgaard og Kjærsgaard Distribution,09:00,2026-02-04,DK-2100,,NAESJ,,0.0,1
+OM81821,Anne Brandt,YQ3462,+45 35744000,Køl og Frys Transport APS,12:00,2026-02-05,DK-8600,,NAESJ,,0.0,1
+QM51660,Morten Andersen,NE3964,+45 66707011,DHL Freight,09:45,2026-02-03,DK-4400,,NAESJ,,0.0,1
+DQ44410,Thomas Berg,FZ9138,+45 21268096,Raben Group,12:00,2026-02-05,DK-2600,,NAESJ,,0.0,1
+QU40972,Thomas Schmidt,YF4339,+45 32787315,XPO Logistics,16:15,2026-02-04,DK-2600,,NAESJ,,0.0,1
+FJ67474,Camilla Fisker,HW1020,+45 52554629,DB Schenker,07:15,2026-02-03,DK-5900,,NAESJ,,0.0,1
+BU00422,Morten Brandt,KZ7938,+45 42914755,Panalpina,18:45,2026-02-04,DK-4500,,NAESJ,,0.0,1
+FX12038,Magnus Kristensen,RP3332,+45 68129300,LL-Transport ApS,11:00,2026-02-04,DK-8200,,NAESJ,,0.0,1
+SK88123,Oliver Christensen,NW3973,+45 31045143,DSV ROAD A/S,10:15,2026-02-05,DK-4300,,NAESJ,,0.0,1
+FZ87975,Gustav Kirk,OD0483,+45 68140531,DSV ROAD A/S,18:00,2026-02-04,DK-5500,,NAESJ,,0.0,1
+YR22153,Frederik Juul,JK2041,+45 98668040,TN Transport A/S,16:45,2026-02-02,DK-5000,,NAESJ,,0.0,1
+XY34513,Marianne Dam,VP4968,+45 84032808,Vognmand Jørgen Borup,14:45,2026-02-06,DK-2800,,NAESJ,,0.0,1
+IO21329,Anders Bundgaard,ZF9585,+45 95198892,Arcese,08:30,2026-02-04,DK-6100,,NAESJ,,0.0,1
+VS04258,Albert Juul,FO9718,+45 19594082,XPO Logistics,12:15,2026-02-06,DK-4400,,NAESJ,,0.0,1
+KR94497,Susanne Bundgaard,OI6099,+45 55085344,DSV ROAD A/S,14:45,2026-02-04,DK-8500,,NAESJ,,0.0,1
+EA44038,Anton Jørgensen,VB0701,+45 08794067,GEODIS,10:15,2026-02-05,DK-4800,,NAESJ,,0.0,1
+WB03954,Susanne Koch,TL3367,+45 04192931,Erling E Christoffersen,12:15,2026-02-06,DK-5500,,NAESJ,,0.0,1
+KP70337,Thomas Holm,BH3056,+45 09315765,DHL Freight,14:15,2026-02-06,DK-6400,,NAESJ,,0.0,1
+IY17424,Alain Fournier,,+XX 443200880,LL-Transport ApS,10:30,2026-02-06,"Villenave-d'Ornon, 33140, FR",,KDEFR,,0.0,1
+CC99346,Vladimir Popescu,,+49 848982357,XPO Logistics,15:15,2026-02-05,"Fehmarn, 23769, DE",,KDEFR,,0.0,1
+GN42351,Alexei Horvat,,+XX 981004756,Rc Transport ApS,11:15,2026-02-06,"Lampaul-Plouarzel, 29810, FR",,KDEFR,,0.0,1
+FD14473,Sylvie Martin,,+33 0450830358,ATEA,10:30,2026-02-04,"Frankfurt am Main, 60549, DE",,KDEFR,,0.0,1
+FA05869,Sergei Kowalski,,+33 0982258029,The Kings Transport ApS,06:45,2026-02-06,"Poitiers, 86000, FR",,KDEFR,,0.0,1
+MB11726,Anna Smirnov,,+33 0593697825,DSV,16:30,2026-02-05,"Paris, 75019, FR",,KDEFR,,0.0,1
+ZI28114,Susanne Wagner,,+33 0227533388,DSV,16:45,2026-02-03,"Fehmarn, 23769, DE",,KDEFR,,0.0,1
+BZ72456,Susanne Meyer,,+49 987729977,Køl og Frys Transport APS,17:15,2026-02-04,"Nancy, 54000, FR",,KDEFR,,0.0,1
+CT19783,Tanja Meyer,,+33 0749331155,C.H. Robinson,07:30,2026-02-04,"Düsseldorf, 40233, DE",,KDEFR,,0.0,1
+YN33318,Elżbieta Petrov,,+33 0283450183,DHL Freight,19:45,2026-02-04,"Tours, 37000, FR",,KDEFR,,0.0,1
+HQ52980,Alain Durand,,+49 603586227,The Kings Transport ApS,15:30,2026-02-03,"Wuppertal, 42107, DE",,KDEFR,,0.0,1
+AB94638,Maria Zieliński,,+XX 368015324,Vognmand Jørgen Borup,06:15,2026-02-06,"Konz, 54329, DE",,KDEFR,,0.0,1
+KP38854,Jan Petrov,,+XX 297003309,TN Transport A/S,15:00,2026-02-02,"Dresden, 01099, DE",,KDEFR,,0.0,1
+ZN48211,Nathalie Bernard,,+XX 120493721,Kuehne+Nagel,15:15,2026-02-03,"Kassel, 34119, DE",,KDEFR,,0.0,1
+CW45875,Svetlana Vasile,,+33 0555134163,Vognmand Jørgen Borup,07:30,2026-02-04,"Paris, 75001, FR",,KDEFR,,0.0,1
+JH32571,Dmitry Wójcik,,+XX 058071567,Compass,07:00,2026-02-06,"München, 81739, DE",,KDEFR,,0.0,1
+AY97795,Grzegorz Lewandowski,,+49 451520361,AK NEMT TRANSPORT APS,16:45,2026-02-03,"Stuttgart, 70188, DE",,KDEFR,,0.0,1
+LY85665,Alain Michel,,+XX 593694004,Arcese,10:15,2026-02-02,"RA Den Helder, 1782, DE",,KDEFR,,0.0,1
+RE44525,Anna Lewandowski,,+33 0392882897,The Kings Transport ApS,16:30,2026-02-05,"Frankfurt am Main, 60316, DE",,KDEFR,,0.0,1
+FC98256,Natalia Dąbrowski,,+XX 950947025,Girteka Logistics,10:00,2026-02-05,"Stuttgart, 70193, DE",,KDEFR,,0.0,1
+DD27031,Peter Becker,,+49 055320089,DACHSER,09:15,2026-02-03,"Auxerre, 89000, FR",,KDEFR,,0.0,1
+QU65691,Elżbieta Kovacs,,+XX 808041702,DB Schenker,13:45,2026-02-06,"Dunkerque, 59430, FR",,KDEFR,,0.0,1
+EQ53285,Christine Lefebvre,,+49 297008898,Vognmand Jørgen Borup,09:00,2026-02-03,"Lampaul-Plouarzel, 29810, FR",,KDEFR,,0.0,1
+TP04129,Michel Petit,,+49 886353490,DSV,13:00,2026-02-06,"Rambouillet, 78120, FR",,KDEFR,,0.0,1
+XF20234,Irina Szymański,,+49 726675006,D S Promotion ApS,07:30,2026-02-03,"Lübeck, 23552, DE",,KDEFR,,0.0,1
+JY70404,Ivan Horvat,,+33 0433347054,DHL Freight,07:30,2026-02-05,"Strasbourg, 67000, FR",,KDEFR,,0.0,1
+PW95186,Nicole Zimmermann,,+33 0142602046,Raben Group,08:00,2026-02-03,"Mantes-la-Jolie, 78200, FR",,KDEFR,,0.0,1
+QO22526,Krzysztof Kuznetsov,,+49 013694168,Hellmann Worldwide Logistics,08:00,2026-02-03,"Blois, 41000, FR",,KDEFR,,0.0,1
+CM56435,Wojciech Lewandowski,,+33 0343511752,Raben Group,07:15,2026-02-02,"Nancy, 54000, FR",,KDEFR,,0.0,1
+XW86480,Sandrine Dubois,,+33 0443765840,Vognmand Jørgen Borup,17:30,2026-02-06,"Tours, 37000, FR",,KDEFR,,0.0,1
+PG82655,Jörg Wagner,,+30 7585852553,GEODIS,17:30,2026-02-03,"Katerini, 601 00, GR",,KDEGR,,0.0,1
+QW45562,Sotirios Alexiou,,+49 626595656,Erling E Christoffersen,15:45,2026-02-02,"Katerini, 601 00, GR",TOUR01-0001,KDEGR,,0.0,1
+WC19213,Anastasia Papadimitriou,,+XX 641977677,C.H. Robinson,12:30,2026-02-04,"Katerini, 601 00, GR",,KDEGR,,0.0,1
+NH45012,Evangelia Mylonas,,+30 6889839641,Jas Kurerservice,16:00,2026-02-06,"Konz, 54329, DE",,KDEGR,,0.0,1
+ZI90550,Vasiliki Filippou,,+XX 522119927,DSV,11:15,2026-02-03,"Kalamata, 241 00, GR",,KDEGR,,0.0,1
+CF86030,Dimitrios Bakoyannis,,+XX 609311544,LKW Walter,14:15,2026-02-02,"Thira, 847 00, GR",TOUR01-0001,KDEGR,,0.0,1
+RR08733,Michał Petrov,,+XX 636986080,Girteka Logistics,18:45,2026-02-05,"Πύλη, 420 37, GR",,KDEGR,,0.0,1
+DL90714,Tomasz Woźniak,,+30 1837056834,Compass,15:15,2026-02-04,"Dresden, 01099, DE",,KDEGR,,0.0,1
+BU10183,Michael Klein,,+30 0972651012,Dilligencen ApS,10:45,2026-02-03,"Tripoli, 221 32, GR",,KDEGR,,0.0,1
+AU23116,Anna Galanis,,+49 184388244,BIH Trans,12:00,2026-02-02,"Harrislee, 24955, DE",,KDEGR,,0.0,1
+QF90806,Peter Fischer,,+30 4169091990,C.H. Robinson,10:15,2026-02-03,"Dresden, 01099, DE",,KDEGR,,0.0,1
+BO18698,Ewa Vasile,,+49 368040631,DACHSER,15:30,2026-02-04,"Θεσσαλονίκη, 562 24, GR",,KDEGR,,0.0,1
+JK81221,Andrzej Woźniak,,+30 9845806259,DB Schenker,18:00,2026-02-04,"Leipzig, 04155, DE",,KDEGR,,0.0,1
+RZ41364,Piotr Popov,,+30 8929993627,The Kings Transport ApS,14:45,2026-02-05,"München, 81241, DE",,KDEGR,,0.0,1
+KV88090,Despoina Konstantinou,,+30 9998496824,Dilligencen ApS,07:45,2026-02-03,"Wuppertal, 42107, DE",,KDEGR,,0.0,1
+PY77613,Jörg Schmidt,,+XX 404725842,Hellmann Worldwide Logistics,18:00,2026-02-03,"Überlingen, 88662, DE",,KDEGR,,0.0,1
+CA11526,Joanna Ivanov,,+30 3502830216,Panalpina,07:15,2026-02-03,"Korinthos, 201 00, GR",,KDEGR,,0.0,1
+CH91642,Panagiotis Dimopoulos,,+XX 368647199,Arcese,18:30,2026-02-04,"Nürnberg, 90429, DE",,KDEGR,,0.0,1
+XB23976,Andrea Richter,,+49 859164937,Compass,16:30,2026-02-06,"Wuppertal, 42107, DE",,KDEGR,,0.0,1
+IB56654,Elżbieta Kamiński,,+XX 474117994,DB Schenker,18:00,2026-02-03,"Istiea, 342 00, GR",,KDEGR,,0.0,1
+EY01341,Sabine Schulz,,+XX 235981749,Kjærgaard og Kjærsgaard Distribution,06:45,2026-02-03,"Trikala, 421 00, GR",,KDEGR,,0.0,1
+HU41363,Katarzyna Ivanov,,+30 6990258122,DHL Freight,09:45,2026-02-06,"Vironia, 620 43, GR",,KDEGR,,0.0,1
+FL58148,Elżbieta Smirnov,,+49 415599607,DACHSER,09:30,2026-02-05,"Kozani, 501 00, GR",,KDEGR,,0.0,1
+AT87577,Alexei Vasile,,+XX 618165155,LKW Walter,08:15,2026-02-03,"Lavrio, 195 00, GR",,KDEGR,,0.0,1
+IA12915,Frank Zimmermann,,+XX 048673782,Compass,13:30,2026-02-03,"Aridea, 584 00, GR",,KDEGR,,0.0,1
+NW31470,Katarzyna Ivanov,,+XX 361156609,C.H. Robinson,14:00,2026-02-02,"Bielefeld, 33607, DE",,KDEGR,,0.0,1
+HF81279,Eleni Georgiou,,+XX 943372927,Kuehne+Nagel,19:30,2026-02-04,"Nürnberg, 90429, DE",,KDEGR,,0.0,1
+PQ91354,Tanja Müller,,+30 8873762993,Dilligencen ApS,15:30,2026-02-03,"Kalamata, 241 00, GR",,KDEGR,,0.0,1
+BK02307,Petra Koch,,+XX 727005161,Jas Kurerservice,13:15,2026-02-03,"Vasiliki, 310 82, GR",,KDEGR,,0.0,1
+EE94084,Adam Novak,,+30 1615823107,Hellmann Worldwide Logistics,09:15,2026-02-06,"Aridea, 584 00, GR",,KDEGR,,0.0,1
+TM53837,Nicolas Moreau,,+33 0130741168,BIH Trans,10:15,2026-02-02,"Auxerre, 89000, FR",,KFRGR,,0.0,1
+KA12661,Maria Kowalczyk,,+33 0995434903,Girteka Logistics,18:15,2026-02-05,"Bordeaux, 33300, FR",,KFRGR,,0.0,1
+HE35904,Natalia Vasile,,+30 6927322092,Vognmand Jørgen Borup,17:30,2026-02-04,"Nice, 06000, FR",,KFRGR,,0.0,1
+RM14972,Philippe Lefebvre,,+XX 307438512,DSV,14:00,2026-02-06,"Nancy, 54000, FR",,KFRGR,,0.0,1
+ZO61928,Anna Szymański,,+33 0558806540,D S Promotion ApS,14:45,2026-02-06,"Θεσσαλονίκη, 562 24, GR",,KFRGR,,0.0,1
+VD75543,Catherine Petit,,+30 9715838786,Panalpina,09:00,2026-02-06,"Nancy, 54000, FR",,KFRGR,,0.0,1
+VP12860,Olga Szymański,,+30 4600650490,Dilligencen ApS,10:45,2026-02-04,"Korinthos, 201 00, GR",,KFRGR,,0.0,1
+FT98073,Georgia Konstantinou,,+30 4179837937,Raben Group,12:30,2026-02-03,"Paris, 75001, FR",,KFRGR,,0.0,1
+ZQ12947,Krzysztof Wiśniewski,,+30 9922532174,LKW Walter,08:45,2026-02-06,"Paris, 75001, FR",,KFRGR,,0.0,1
+MQ79495,Nikolaos Konstantinou,,+33 0352249558,Girteka Logistics,06:15,2026-02-03,"Villenave-d'Ornon, 33140, FR",,KFRGR,,0.0,1
+MA29811,Elena Popov,,+XX 078833146,Jas Kurerservice,17:15,2026-02-05,"Aurillac, 15000, FR",,KFRGR,,0.0,1
+ZI55495,Panagiotis Galanis,,+33 0608926525,Køl og Frys Transport APS,07:45,2026-02-05,"Kastoria, 521 00, GR",,KFRGR,,0.0,1
+RF41629,Isabelle Lefebvre,,+30 8411178041,GEODIS,09:45,2026-02-03,"Dunkerque, 59430, FR",,KFRGR,,0.0,1
+MT84259,Zofia Lewandowski,,+30 5810061767,Girteka Logistics,19:00,2026-02-04,"Πύλη, 420 37, GR",,KFRGR,,0.0,1
+BD87591,Katarzyna Kowalczyk,,+30 2043388998,LKW Walter,19:00,2026-02-04,"Montpellier, 34090, FR",,KFRGR,,0.0,1
+JP93965,Bernard Fournier,,+XX 490204985,DSV,17:30,2026-02-05,"Marseille, 13004, FR",,KFRGR,,0.0,1
+OM78149,Svetlana Popescu,,+33 0398759083,Arcese,13:15,2026-02-03,"Alimos, 174 55, GR",,KFRGR,,0.0,1
+PY24255,Vassilios Vasileiou,,+XX 126817836,The Kings Transport ApS,09:30,2026-02-06,"Katerini, 601 00, GR",,KFRGR,,0.0,1
+RR21322,Sylvie Moreau,,+XX 765025995,Arcese,16:15,2026-02-05,"Auxerre, 89000, FR",,KFRGR,,0.0,1
+KS08338,Marek Smirnov,,+XX 706895374,Torben Jørgensen Eftf. ApS,17:30,2026-02-05,"Spetson,, 661 00, GR",,KFRGR,,0.0,1
+QN57062,Christine Martin,,+XX 947293990,ATEA,12:45,2026-02-05,"Zakinthos, 290 92, GR",,KFRGR,,0.0,1
+OH66004,Bernard Dubois,,+33 0343866687,Torben Jørgensen Eftf. ApS,13:30,2026-02-04,"Cherbourg-en-Cotentin, 50100, FR",,KFRGR,,0.0,1
+VB77750,Ivan Wiśniewski,,+30 1309466450,D S Promotion ApS,11:30,2026-02-06,"Mantes-la-Jolie, 78200, FR",,KFRGR,,0.0,1
+RM30818,Maria Alexiou,,+33 0438595941,DHL Freight,12:45,2026-02-04,"Tripoli, 221 32, GR",,KFRGR,,0.0,1
+PL21890,Nathalie Bernard,,+XX 689402925,BIH Trans,13:45,2026-02-05,"Aurillac, 15000, FR",,KFRGR,,0.0,1
+YV05668,Jan Horvat,,+XX 914445783,Køl og Frys Transport APS,12:00,2026-02-02,"Mantes-la-Jolie, 78200, FR",,KFRGR,,0.0,1
+OQ06640,Vladimir Szymański,,+33 0589397831,Vognmand Jørgen Borup,19:30,2026-02-06,"Quimper, 29000, FR",,KFRGR,,0.0,1
+TO40557,Christos Konstantinou,,+30 9479294382,DB Schenker,16:45,2026-02-06,"Colombes, 92700, FR",,KFRGR,,0.0,1
+SS17067,Ewa Vasile,,+33 0342387050,TN Transport A/S,06:45,2026-02-06,"Korinthos, 201 00, GR",,KFRGR,,0.0,1
+FG62056,Maria Petrov,,+30 2530787503,BIH Trans,14:15,2026-02-05,"Auxerre, 89000, FR",,KFRGR,,0.0,1

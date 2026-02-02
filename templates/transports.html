@@ -9,14 +9,26 @@
             font-family: Arial, sans-serif;
             font-size: 12px;
         }
+        .transports-header,
         .transport-item {
-            border: 1px solid #ddd;
-            margin-bottom: 5px;
-            padding: 5px;
-            cursor: pointer;
-            display: flex;
+            display: grid;
+            grid-template-columns: 32px 0.9fr 0.8fr 0.8fr 1.1fr 1.1fr 0.6fr 0.6fr 0.5fr 0.6fr;
+            column-gap: 8px;
             align-items: center;
-            gap: 10px;
+            list-style: none;
+            font-size: 12px;
+            border-bottom: 1px solid #ccc;
+            padding: 4px 0;
+            min-height: 20px;
+            height: 20px;
+        }
+        .transports-header {
+            font-weight: bold;
+            border-bottom: 1px solid #999;
+            color: #333;
+        }
+        .transport-item {
+            cursor: pointer;
         }
         .transport-item:hover {
             background-color: #cce5ff;
@@ -29,26 +41,22 @@
         }
         .transport-id {
             font-weight: bold;
-            min-width: 80px;
-            flex-shrink: 0;
+        }
+        .transport-click {
+            cursor: pointer;
+            display: contents;
+        }
+        .transport-click > span {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
         .transport-details {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            flex: 1;
-            font-size: 11px;
-        }
-        .detail-item {
-            display: flex;
-            flex-direction: column;
-        }
-        .detail-label {
             color: #666;
-            font-size: 10px;
         }
-        .detail-value {
-            font-weight: 500;
+        .sale-true {
+            color: green;
+            font-weight: bold;
         }
     </style>
     <script>
@@ -66,49 +74,58 @@
                 selectTransport(id, element);
             }
         }
-        function adjustDateRange(delta) {
-            const rangeInput = document.getElementById('date_range_days');
-            let currentValue = parseInt(rangeInput.value) || 0;
-            currentValue = currentValue + delta;
-            rangeInput.value = currentValue;
-            document.querySelector('form').submit();
-        }
+        // Submit form on Enter key
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form[action="/transports"]');
+            if (form) {
+                form.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        form.submit();
+                    }
+                });
+            }
+        });
     </script>
 </head>
 <body>
     <form method="GET" action="/transports" style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 10px;">
+        <input type="hidden" name="department" value="{{ request.args.get('department', 'KDEGR') }}">
+        <input type="hidden" name="start_date" value="{{ request.args.get('start_date', today_date) }}">
+        <input type="hidden" name="date_range_days" value="{{ request.args.get('date_range_days', '0') }}">
         <input type="text" name="transport_id" placeholder="Transport ID" value="{{ request.args.get('transport_id', '') }}" style="padding: 4px;">
         <input type="text" name="collection_pc" placeholder="Collection PC (e.g. 2700-3500)" value="{{ request.args.get('collection_pc', '') }}" style="padding: 4px; width: 180px;">
         <input type="text" name="delivery_pc" placeholder="Delivery PC (e.g. 2700-3500)" value="{{ request.args.get('delivery_pc', '') }}" style="padding: 4px; width: 180px;">
-        <div style="display: flex; align-items: center; gap: 5px;">
-            <span style="font-size: 12px;">{{ request.args.get('start_date', today_date) }}</span>
-            <input type="date" id="date_picker_input" name="start_date" value="{{ request.args.get('start_date', today_date) }}" style="width: 20px; height: 20px; cursor: pointer; border: 1px solid #999; border-radius: 3px;" title="Change start date" onchange="this.form.submit()">
-            <input type="number" id="date_range_days" name="date_range_days" value="{{ request.args.get('date_range_days', '0') }}" readonly style="padding: 4px; width: 30px; background-color: #f0f0f0; border: 1px solid #ccc; text-align: center;">
-            <button type="button" onclick="adjustDateRange(-1)" style="padding: 2px 8px;">-</button>
-            <button type="button" onclick="adjustDateRange(1)" style="padding: 2px 8px;">+</button>
-        </div>
     </form>
-    <div>
-        {% for transport in transports %}
-        <div class="transport-item" onclick="selectTransport('{{ transport.Transport_ID }}', this)">
-            <input type="checkbox" name="transport" value="{{ transport.Transport_ID }}" class="transport-checkbox" onchange="makeSingle(this, '{{ transport.Transport_ID }}', this.parentElement)" onclick="event.stopPropagation()">
-            <span class="transport-id">{{ transport.Transport_ID }}</span>
-            <div class="transport-details">
-                <div class="detail-item">
-                    <span class="detail-label">LDM</span>
-                    <span class="detail-value">{{ transport.Ldm }}</span>
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">Pickup</span>
-                    <span class="detail-value">{{ transport.first_stop_date }} {{ transport.first_stop_time }}</span>
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">Delivery</span>
-                    <span class="detail-value">{{ transport.last_stop_date }} {{ transport.last_stop_time }}</span>
-                </div>
-            </div>
-        </div>
-        {% endfor %}
+    <div class="transports-header" style="padding-left: 0;">
+        <div></div>
+        <div>ID</div>
+        <div>Col</div>
+        <div>Del</div>
+        <div>Pickup</div>
+        <div>Delivery</div>
+        <div>LDM</div>
+        <div>Weight</div>
+        <div>Sale</div>
+        <div>Cost</div>
     </div>
+    <ul style="padding-left: 0; margin: 0;">
+        {% for transport in transports %}
+        <li class="transport-item">
+            <input type="checkbox" name="transport" value="{{ transport.Transport_ID }}" onclick="event.stopPropagation(); makeSingle(this, '{{ transport.Transport_ID }}', this.parentElement);">
+            <span class="transport-click" onclick="selectTransport('{{ transport.Transport_ID }}', this)">
+                <span class="transport-id">{{ transport.Transport_ID }}</span>
+                <span class="transport-details">{{ transport.first_collection_country }} {{ transport.first_collection_postal }}</span>
+                <span class="transport-details">{{ transport.last_delivery_country }} {{ transport.last_delivery_postal }}</span>
+                <span class="transport-details">{{ transport.first_stop_date }} {{ transport.first_stop_time }}</span>
+                <span class="transport-details">{{ transport.last_stop_date }} {{ transport.last_stop_time }}</span>
+                <span class="transport-details">{{ "%.1f"|format(transport.Ldm) }}</span>
+                <span class="transport-details">{{ transport.Weight }}kg</span>
+                <span class="transport-details {% if transport.Sale %}sale-true{% endif %}">{{ transport.Sale }}</span>
+                <span class="transport-details">{{ transport.Cost }}</span>
+            </span>
+        </li>
+        {% endfor %}
+    </ul>
 </body>
 </html>

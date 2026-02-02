@@ -14,6 +14,58 @@
             align-items: baseline;
             gap: 12px;
             margin-bottom: 10px;
+            justify-content: space-between;
+        }
+        .header-left {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+        }
+        .department-filter {
+            padding: 6px 10px;
+            font-size: 14px;
+            border: 2px solid #1a5490;
+            border-radius: 4px;
+            background-color: white;
+            cursor: pointer;
+        }
+        .date-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+        .date-controls input[type="date"] {
+            width: 100px;
+            height: 20px;
+            cursor: pointer;
+            border: 2px solid #1a5490;
+            border-radius: 3px;
+            padding: 4px;
+        }
+        .date-controls .days-display {
+            padding: 2px 4px;
+            min-width: 20px;
+            height: 20px;
+            background-color: #f0f0f0;
+            border: 2px solid #1a5490;
+            text-align: center;
+            border-radius: 3px;
+            display: inline-block;
+            line-height: 20px;
+            font-weight: bold;
+        }
+        .date-controls button {
+            padding: 4px 12px;
+            background-color: #1a5490;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 3px;
+            font-size: 14px;
+        }
+        .date-controls button:hover {
+            background-color: #0d3d6b;
         }
         h1 {
             margin: 0;
@@ -89,8 +141,150 @@
             color: #1a5490;
             font-weight: bold;
         }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        .modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 20px;
+            border: 2px solid #1a5490;
+            border-radius: 8px;
+            width: 400px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .modal-header {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #1a5490;
+        }
+        .modal-body {
+            margin-bottom: 20px;
+        }
+        .modal-body p {
+            margin: 8px 0;
+        }
+        .modal-body input {
+            width: 100%;
+            padding: 8px;
+            font-size: 14px;
+            border: 2px solid #1a5490;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        .modal-footer button {
+            margin: 0;
+        }
     </style>
     <script>
+        function getCurrentDepartment() {
+            const select = document.getElementById('department_filter');
+            return select ? select.value : 'KDEGR';
+        }
+        function getDateParams() {
+            const startDate = document.getElementById('start_date_input').value;
+            const dateRange = document.getElementById('date_range_input').textContent || '0';
+            return { startDate, dateRange };
+        }
+        function getUrlParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return {
+                department: urlParams.get('department') || 'KDEGR',
+                startDate: urlParams.get('start_date') || new Date().toISOString().split('T')[0],
+                dateRange: urlParams.get('date_range_days') || '0'
+            };
+        }
+        function adjustDateRange(delta) {
+            const rangeDisplay = document.getElementById('date_range_input');
+            let currentValue = parseInt(rangeDisplay.textContent) || 0;
+            currentValue = currentValue + delta;
+            rangeDisplay.textContent = currentValue;
+            applyDateFilter();
+        }
+        function applyDateFilter() {
+            const dept = getCurrentDepartment();
+            const { startDate, dateRange } = getDateParams();
+            const shipFrame = document.getElementById('shipments_frame');
+            const transFrame = document.getElementById('transports_frame');
+            const shipUrl = new URL(shipFrame.src);
+            const transUrl = new URL(transFrame.src);
+            shipUrl.searchParams.set('department', dept);
+            shipUrl.searchParams.set('start_date', startDate);
+            shipUrl.searchParams.set('date_range_days', dateRange);
+            transUrl.searchParams.set('department', dept);
+            transUrl.searchParams.set('start_date', startDate);
+            transUrl.searchParams.set('date_range_days', dateRange);
+            shipFrame.src = shipUrl.toString();
+            transFrame.src = transUrl.toString();
+        }
+        function changeDepartment() {
+            const dept = getCurrentDepartment();
+            reloadFrames(dept);
+        }
+        function reloadFrames(dept) {
+            const { startDate, dateRange } = getDateParams();
+            const shipFrame = document.getElementById('shipments_frame');
+            const transFrame = document.getElementById('transports_frame');
+            const currentShipUrl = new URL(shipFrame.src);
+            const currentTransUrl = new URL(transFrame.src);
+            currentShipUrl.searchParams.set('department', dept);
+            currentShipUrl.searchParams.set('start_date', startDate);
+            currentShipUrl.searchParams.set('date_range_days', dateRange);
+            currentTransUrl.searchParams.set('department', dept);
+            currentTransUrl.searchParams.set('start_date', startDate);
+            currentTransUrl.searchParams.set('date_range_days', dateRange);
+            shipFrame.src = currentShipUrl.toString();
+            transFrame.src = currentTransUrl.toString();
+        }
+        function preserveShipmentFilters(dept) {
+            const { startDate, dateRange } = getDateParams();
+            const shipFrame = document.getElementById('shipments_frame');
+            const currentUrl = new URL(shipFrame.src);
+            currentUrl.searchParams.set('department', dept);
+            currentUrl.searchParams.set('start_date', startDate);
+            currentUrl.searchParams.set('date_range_days', dateRange);
+            return currentUrl.toString();
+        }
+        function preserveTransportFilters(dept) {
+            const { startDate, dateRange } = getDateParams();
+            const transFrame = document.getElementById('transports_frame');
+            const currentUrl = new URL(transFrame.src);
+            currentUrl.searchParams.set('department', dept);
+            currentUrl.searchParams.set('start_date', startDate);
+            currentUrl.searchParams.set('date_range_days', dateRange);
+            return currentUrl.toString();
+        }
+        window.onload = function() {
+            const params = getUrlParams();
+            document.getElementById('department_filter').value = params.department;
+            document.getElementById('start_date_input').value = params.startDate;
+            document.getElementById('date_range_input').textContent = params.dateRange;
+            const dept = params.department;
+            reloadFrames(dept);
+        };
+        
+        function goToPlanning() {
+            const dept = getCurrentDepartment();
+            const { startDate, dateRange } = getDateParams();
+            const url = new URL('/planning', window.location.origin);
+            url.searchParams.set('department', dept);
+            url.searchParams.set('start_date', startDate);
+            url.searchParams.set('date_range_days', dateRange);
+            window.location.href = url.toString();
+        }
         function showMessage(msg) {
             var msgDiv = document.getElementById('message');
             msgDiv.textContent = msg;
@@ -113,8 +307,9 @@
                     if (data.message.startsWith('Error:')) {
                         showMessage(data.message.substring(7));
                     } else {
-                        document.getElementById('transports_frame').contentWindow.location.reload();
-                        document.getElementById('shipments_frame').contentWindow.location.reload();
+                        const dept = getCurrentDepartment();
+                        document.getElementById('transports_frame').src = preserveTransportFilters(dept);
+                        document.getElementById('shipments_frame').src = preserveShipmentFilters(dept);
                     }
                 });
             } else {
@@ -142,8 +337,9 @@
                     body: JSON.stringify({transport: transportId, shipments: shipmentIds})
                 }).then(response => response.json()).then(data => {
                     showMessage(data.message);
-                    document.getElementById('transports_frame').contentWindow.location.reload();
-                    document.getElementById('shipments_frame').contentWindow.location.reload();
+                    const dept = getCurrentDepartment();
+                    document.getElementById('transports_frame').src = preserveTransportFilters(dept);
+                    document.getElementById('shipments_frame').src = preserveShipmentFilters(dept);
                 });
             } else {
                 alert('No shipments selected');
@@ -156,42 +352,148 @@
             for (var i = 0; i < shipmentCheckboxes.length; i++) {
                 shipmentIds.push(shipmentCheckboxes[i].value);
             }
-            var transportsIframe = document.getElementById('transports_frame');
-            var transportRadio = transportsIframe.contentDocument.querySelector('input[name="transport"]:checked');
-            if (!transportRadio) {
-                alert('No transport selected');
-                return;
-            }
-            var transportId = transportRadio.value;
             if (shipmentIds.length > 0) {
                 fetch('/remove_shipment', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({transport: transportId, shipments: shipmentIds})
+                    body: JSON.stringify({shipments: shipmentIds})
                 }).then(response => response.json()).then(data => {
                     showMessage(data.message);
-                    document.getElementById('transports_frame').contentWindow.location.reload();
-                    document.getElementById('shipments_frame').contentWindow.location.reload();
+                    const dept = getCurrentDepartment();
+                    document.getElementById('transports_frame').src = preserveTransportFilters(dept);
+                    document.getElementById('shipments_frame').src = preserveShipmentFilters(dept);
                     document.getElementById('details_frame').contentWindow.location.reload();
                 });
             } else {
                 alert('No shipments selected');
             }
         }
+        function sellShipmentTransport() {
+            var shipmentsIframe = document.getElementById('shipments_frame');
+            var shipmentCheckboxes = shipmentsIframe.contentDocument.querySelectorAll('input[name="shipment"]:checked');
+            var shipmentIds = [];
+            for (var i = 0; i < shipmentCheckboxes.length; i++) {
+                shipmentIds.push(shipmentCheckboxes[i].value);
+            }
+            
+            var transportsIframe = document.getElementById('transports_frame');
+            var transportRadio = transportsIframe.contentDocument.querySelector('input[name="transport"]:checked');
+            var transportId = transportRadio ? transportRadio.value : null;
+            
+            if (!transportId && shipmentIds.length === 0) {
+                alert('No shipments or transport selected');
+                return;
+            }
+            
+            // Show modal to get sale cost
+            showSaleModal(transportId, shipmentIds);
+        }
+        
+        function showSaleModal(transportId, shipmentIds) {
+            var modal = document.getElementById('saleModal');
+            var modalTransportId = document.getElementById('modalTransportId');
+            var modalShipments = document.getElementById('modalShipments');
+            var saleCostInput = document.getElementById('saleCostInput');
+            
+            // Set transport ID or indicate new transport will be created
+            if (transportId) {
+                modalTransportId.textContent = transportId;
+                // Get shipments for this transport
+                fetch('/get_transport_info?transport_id=' + transportId)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.shipments) {
+                            modalShipments.textContent = data.shipments.join(', ');
+                        }
+                    });
+            } else {
+                modalTransportId.textContent = 'New transport (will be created)';
+                modalShipments.textContent = shipmentIds.join(', ');
+            }
+            
+            saleCostInput.value = '';
+            modal.style.display = 'block';
+            
+            // Store data for confirmation
+            modal.dataset.transportId = transportId || '';
+            modal.dataset.shipmentIds = JSON.stringify(shipmentIds);
+        }
+        
+        function confirmSale() {
+            var modal = document.getElementById('saleModal');
+            var saleCost = parseFloat(document.getElementById('saleCostInput').value);
+            
+            if (isNaN(saleCost) || saleCost <= 0) {
+                alert('Please enter a valid sale cost');
+                return;
+            }
+            
+            var transportId = modal.dataset.transportId;
+            var shipmentIds = JSON.parse(modal.dataset.shipmentIds);
+            
+            var requestBody = {
+                sale_cost: saleCost
+            };
+            
+            if (transportId) {
+                requestBody.transport = transportId;
+            } else {
+                requestBody.shipments = shipmentIds;
+            }
+            
+            fetch('/sell_shipment_transport', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(requestBody)
+            }).then(response => response.json()).then(data => {
+                showMessage(data.message);
+                const dept = getCurrentDepartment();
+                document.getElementById('transports_frame').src = preserveTransportFilters(dept);
+                if (!transportId) {
+                    document.getElementById('shipments_frame').src = preserveShipmentFilters(dept);
+                }
+                closeSaleModal();
+            }).catch(error => {
+                alert('Error: ' + error);
+                closeSaleModal();
+            });
+        }
+        
+        function closeSaleModal() {
+            var modal = document.getElementById('saleModal');
+            modal.style.display = 'none';
+        }
     </script>
 </head>
 <body>
     <div class="header">
-        <h1>OneDispatch Direct</h1>
-        <div class="nav-links">
-            <a href="/">Overview</a>
-            <a href="/planning">Planning</a>
+        <div class="header-left">
+            <h1>OneDispatch Direct</h1>
+            <div class="nav-links">
+                <a href="/">Overview</a>
+                <a href="#" onclick="goToPlanning(); return false;">Planning</a>
+            </div>
         </div>
+        <div class="date-controls">
+            <span id="date_display" style="font-size: 12px;"></span>
+            <input type="date" id="start_date_input" onchange="applyDateFilter()">
+            <span id="date_range_input" class="days-display">0</span>
+            <button onclick="adjustDateRange(-1)">-</button>
+            <button onclick="adjustDateRange(1)">+</button>
+        </div>
+        <select id="department_filter" class="department-filter" onchange="changeDepartment()">
+            <option value="KDEGR" selected>KDEGR</option>
+            <option value="KDEFR">KDEFR</option>
+            <option value="KFRGR">KFRGR</option>
+            <option value="NAESJ">NAESJ</option>
+            <option value="ALL">All Departments</option>
+        </select>
     </div>
     <div class="button-container">
         <button onclick="createTransport()">Create Transport</button>
         <button onclick="addShipment()">Add Shipment</button>
         <button onclick="removeShipment()">Remove Shipment</button>
+        <button onclick="sellShipmentTransport()">Sell Shipment/Transport</button>
     </div>
     <div class="frames-container">
         <div class="top-row">
@@ -206,6 +508,23 @@
             <iframe id="details_frame" src=""></iframe>
         </div>
     </div>
+
+    <div id="saleModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">Sell Shipment/Transport</div>
+            <div class="modal-body">
+                <p><strong>Transport ID:</strong> <span id="modalTransportId"></span></p>
+                <p><strong>Shipments:</strong> <span id="modalShipments"></span></p>
+                <p><strong>Sale Cost:</strong></p>
+                <input type="number" id="saleCostInput" placeholder="Enter sale cost" min="0" step="0.01">
+            </div>
+            <div class="modal-footer">
+                <button onclick="closeSaleModal()">Cancel</button>
+                <button onclick="confirmSale()">Confirm</button>
+            </div>
+        </div>
+    </div>
+
     <div id="message"></div>
 </body>
 </html>

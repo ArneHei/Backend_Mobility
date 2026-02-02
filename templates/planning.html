@@ -5,15 +5,84 @@
     <style>
         body {
             margin: 0;
-            padding: 0;
+            padding: 10px;
             font-family: Arial, sans-serif;
             height: 100vh;
             display: flex;
             flex-direction: column;
         }
         .header {
-            padding: 10px;
-            border-bottom: 1px solid #ccc;
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+            margin-bottom: 10px;
+            justify-content: space-between;
+        }
+        .header-left {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+        }
+        .department-filter {
+            padding: 6px 10px;
+            font-size: 14px;
+            border: 2px solid #1a5490;
+            border-radius: 4px;
+            background-color: white;
+            cursor: pointer;
+        }
+        .date-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+        .date-controls input[type="date"] {
+            width: 100px;
+            height: 20px;
+            cursor: pointer;
+            border: 2px solid #1a5490;
+            border-radius: 3px;
+            padding: 4px;
+        }
+        .date-controls .days-display {
+            padding: 2px 4px;
+            min-width: 20px;
+            height: 20px;
+            background-color: #f0f0f0;
+            border: 2px solid #1a5490;
+            text-align: center;
+            border-radius: 3px;
+            display: inline-block;
+            line-height: 20px;
+            font-weight: bold;
+        }
+        .date-controls button {
+            padding: 4px 12px;
+            background-color: #1a5490;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 3px;
+            font-size: 14px;
+        }
+        .date-controls button:hover {
+            background-color: #0d3d6b;
+        }
+        h1 {
+            margin: 0;
+            color: black;
+        }
+        .nav-links {
+            font-size: 12px;
+        }
+        .nav-links a {
+            margin-right: 8px;
+            color: #1a5490;
+            text-decoration: none;
+        }
+        .nav-links a:hover {
+            text-decoration: underline;
         }
         .frames-container {
             flex: 1;
@@ -45,10 +114,48 @@
             text-align: left;
             position: sticky;
             top: 0;
+            border-right: 1px solid #fff;
+        }
+        th:last-child {
+            border-right: none;
         }
         td {
             padding: 6px 8px;
             border-bottom: 1px solid #ddd;
+            border-right: 1px solid #ddd;
+        }
+        td:last-child {
+            border-right: none;
+        }
+        td:first-child {
+            max-width: 10ch;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        td:nth-child(2) {
+            max-width: 5ch;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        td:nth-child(3) {
+            max-width: 5ch;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        td:nth-child(4) {
+            max-width: 7ch;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        td:nth-child(5) {
+            max-width: 8ch;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
         tr:hover {
             background-color: #cce5ff;
@@ -58,6 +165,18 @@
         }
         .clickable-row {
             cursor: pointer;
+        }
+        .time-input {
+            width: 100%;
+            border: none;
+            background: transparent;
+            padding: 0;
+            font-size: 12px;
+            font-family: Arial, sans-serif;
+        }
+        .time-input:focus {
+            outline: 2px solid #1a5490;
+            background-color: #fff;
         }
         .section-title {
             font-weight: bold;
@@ -78,6 +197,65 @@
         }
     </style>
     <script>
+        function getCurrentDepartment() {
+            const select = document.getElementById('department_filter');
+            return select ? select.value : 'KDEGR';
+        }
+        
+        function getDateParams() {
+            const startDate = document.getElementById('start_date_input').value;
+            const dateRange = document.getElementById('date_range_input').textContent || '0';
+            return { startDate, dateRange };
+        }
+        
+        function adjustDateRange(delta) {
+            const rangeDisplay = document.getElementById('date_range_input');
+            let currentValue = parseInt(rangeDisplay.textContent) || 0;
+            currentValue = currentValue + delta;
+            rangeDisplay.textContent = currentValue;
+            applyFilters();
+        }
+        
+        function applyFilters() {
+            const dept = getCurrentDepartment();
+            const { startDate, dateRange } = getDateParams();
+            const url = new URL(window.location.href);
+            url.searchParams.set('department', dept);
+            url.searchParams.set('start_date', startDate);
+            url.searchParams.set('date_range_days', dateRange);
+            window.location.href = url.toString();
+        }
+        
+        function changeDepartment() {
+            applyFilters();
+        }
+        
+        function getFilterParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return {
+                department: urlParams.get('department') || 'KDEGR',
+                startDate: urlParams.get('start_date') || new Date().toISOString().split('T')[0],
+                dateRange: urlParams.get('date_range_days') || '0'
+            };
+        }
+        
+        window.onload = function() {
+            const params = getFilterParams();
+            document.getElementById('department_filter').value = params.department;
+            document.getElementById('start_date_input').value = params.startDate;
+            document.getElementById('date_range_input').textContent = params.dateRange;
+        };
+        
+        function goToOverview() {
+            const dept = getCurrentDepartment();
+            const { startDate, dateRange } = getDateParams();
+            const url = new URL('/', window.location.origin);
+            url.searchParams.set('department', dept);
+            url.searchParams.set('start_date', startDate);
+            url.searchParams.set('date_range_days', dateRange);
+            window.location.href = url.toString();
+        };
+        
         function selectTransport(transportId, rowElement) {
             // Remove previous selection
             document.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'));
@@ -85,6 +263,18 @@
             rowElement.classList.add('selected');
             // Load stops for transport
             loadStops('transport', transportId);
+        }
+        
+        function handleCheckboxClick(checkbox, type, id, rowElement) {
+            // Just handle checkbox state, no need to uncheck others
+            if (checkbox.checked) {
+                // Select the row and load details
+                if (type === 'Transport') {
+                    selectTransport(id, rowElement);
+                } else {
+                    selectTruck(id, '', rowElement);
+                }
+            }
         }
         
         function selectTruck(licensePlate, transportId, rowElement) {
@@ -100,25 +290,124 @@
             }
         }
         
+        function updateStopSequence(stopId, transportId, inputElement) {
+            const newSequence = parseInt(inputElement.value);
+            const oldValue = inputElement.getAttribute('data-original');
+            
+            if (isNaN(newSequence) || newSequence < 1) {
+                alert('Please enter a valid sequence number (1 or greater)');
+                inputElement.value = oldValue;
+                return;
+            }
+            
+            fetch('/reorder_stops', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    transport_id: transportId,
+                    stop_id: stopId,
+                    new_sequence: newSequence
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert('Error: ' + data.error);
+                    inputElement.value = oldValue;
+                } else {
+                    // Reload the transport details to reflect changes
+                    loadStops('transport', transportId);
+                }
+            })
+            .catch(error => {
+                alert('Error updating sequence: ' + error);
+                inputElement.value = oldValue;
+            });
+        }
+        
         function loadStops(type, id) {
             fetch(`/planning/stops/${type}/${id}`)
                 .then(response => response.json())
                 .then(data => {
                     const detailsDiv = document.getElementById('details-content');
-                    if (data.stops && data.stops.length > 0) {
-                        let html = '<h3 style="margin-top: 0;">Stops for ' + id + '</h3>';
-                        data.stops.forEach((stop, index) => {
-                            html += `<div class="stop-item">
-                                <span class="stop-type">${index + 1}. ${stop.Type}</span><br>
-                                <strong>${stop.Name}</strong><br>
-                                ${stop.Address}, ${stop.City} ${stop.Postal_Code}<br>
-                                Date: ${stop.Date} | Time: ${stop.Time}<br>
-                                Weight: ${stop.Weight}kg | Volume: ${stop.Volume} | LDM: ${stop.Ldm}
-                            </div>`;
-                        });
-                        detailsDiv.innerHTML = html;
+                    if (data.transport) {
+                        const transport = data.transport;
+                        const stops = data.stops || [];
+                        
+                        // Separate pickup and delivery stops
+                        const pickupStops = stops.filter(s => s.Type === 'P').sort((a, b) => a.Sequence - b.Sequence);
+                        const deliveryStops = stops.filter(s => s.Type === 'D').sort((a, b) => a.Sequence - b.Sequence);
+                        
+                        // Build shipments list
+                        const shipmentsList = transport.Shipments.map(id => `<li>${id}</li>`).join('');
+                        
+                        // Build pickup stops HTML with editable sequence
+                        const pickupStopsHtml = pickupStops.map(stop => 
+                            `<div style="display: flex; gap: 5px; margin-bottom: 5px; align-items: center; justify-content: flex-end;">
+                                <span style="border: 1px solid #999; padding: 2px 5px; background-color: #f9f9f9; font-size: 11px;">${stop.Shipment_ID}</span>
+                                <span style="border: 1px solid #999; padding: 2px 5px; background-color: #f9f9f9; font-size: 11px; width: 20ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${stop.Country} ${stop.Postal_Code} ${stop.City}</span>
+                                <span style="border: 1px solid #999; padding: 2px 5px; background-color: #f9f9f9; font-size: 11px;">${stop.Date}</span>
+                                <span style="border: 1px solid #999; padding: 2px 5px; background-color: #f9f9f9; font-size: 11px;">${stop.Time}</span>
+                                <input type="number" style="width: 40px; border: 1px solid #999; padding: 2px 5px; background-color: #fff; font-size: 11px; text-align: center;" value="${stop.Sequence}" data-original="${stop.Sequence}" onblur="updateStopSequence('${stop.ID}', '${transport.Transport_ID}', this)" onkeypress="if(event.key === 'Enter') { event.preventDefault(); this.blur(); }" min="1">
+                            </div>`
+                        ).join('');
+                        
+                        // Build delivery stops HTML with editable sequence
+                        const deliveryStopsHtml = deliveryStops.map(stop => 
+                            `<div style="display: flex; gap: 5px; margin-bottom: 5px; align-items: center;">
+                                <input type="number" style="width: 40px; border: 1px solid #999; padding: 2px 5px; background-color: #fff; font-size: 11px; text-align: center;" value="${stop.Sequence}" data-original="${stop.Sequence}" onblur="updateStopSequence('${stop.ID}', '${transport.Transport_ID}', this)" onkeypress="if(event.key === 'Enter') { event.preventDefault(); this.blur(); }" min="1">
+                                <span style="border: 1px solid #999; padding: 2px 5px; background-color: #f9f9f9; font-size: 11px; width: 20ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${stop.Country} ${stop.Postal_Code} ${stop.City}</span>
+                                <span style="border: 1px solid #999; padding: 2px 5px; background-color: #f9f9f9; font-size: 11px;">${stop.Date}</span>
+                                <span style="border: 1px solid #999; padding: 2px 5px; background-color: #f9f9f9; font-size: 11px;">${stop.Time}</span>
+                                <span style="border: 1px solid #999; padding: 2px 5px; background-color: #f9f9f9; font-size: 11px;">${stop.Shipment_ID}</span>
+                            </div>`
+                        ).join('');
+                        
+                        detailsDiv.innerHTML = `
+                            <table width="100%">
+                                <tr valign="top">
+                                    <td width="50%">
+                                        <strong>Transport ID:</strong> ${transport.Transport_ID}<br>
+                                        <strong>Department:</strong> ${transport.Department}<br>
+                                        <strong>Shipments:</strong>
+                                        <ul style="margin-top: 5px; margin-bottom: 5px; padding-left: 20px;">
+                                            ${shipmentsList}
+                                        </ul>
+                                        <strong>Pickup Date:</strong> ${transport.Pickup_date}<br>
+                                        <strong>Delivery Date:</strong> ${transport.Delivery_date}<br>
+                                        <strong>Weight:</strong> ${transport.Weight}<br>
+                                        <strong>Volume:</strong> ${transport.Volume.toFixed(2)}<br>
+                                        <strong>Ldm:</strong> ${transport.Ldm.toFixed(1)}<br>
+                                        <strong>Cost:</strong> ${transport.Cost}<br>
+                                        <strong>Status:</strong> ${transport.Status}<br>
+                                        <strong>Vehicle:</strong> ${transport.Vehicle}<br>
+                                        <strong>Haulier:</strong> ${transport.Haulier}<br>
+                                        <strong>Driver:</strong> ${transport.Driver}<br>
+                                        <strong>Trailer:</strong> ${transport.Trailer}
+                                    </td>
+                                    <td width="50%">
+                                        <table width="100%">
+                                            <tr>
+                                                <td width="50%" valign="top">
+                                                    <div style="border: 1px solid #ccc; padding: 5px; background-color: #f9f9f9; text-align: right;">
+                                                        <h4 style="margin-top: 0; margin-bottom: 5px;">Pickup Stops</h4>
+                                                        ${pickupStopsHtml || '<p style="margin: 0;">No stops available.</p>'}
+                                                    </div>
+                                                </td>
+                                                <td width="50%" valign="top">
+                                                    <div style="border: 1px solid #ccc; padding: 5px; background-color: #f9f9f9;">
+                                                        <h4 style="margin-top: 0; margin-bottom: 5px;">Delivery Stops</h4>
+                                                        ${deliveryStopsHtml || '<p style="margin: 0;">No stops available.</p>'}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        `;
                     } else {
-                        detailsDiv.innerHTML = '<p>No stops available.</p>';
+                        detailsDiv.innerHTML = '<p>No transport data available.</p>';
                     }
                 })
                 .catch(error => {
@@ -126,86 +415,195 @@
                     document.getElementById('details-content').innerHTML = '<p>Error loading stops.</p>';
                 });
         }
+        
+        function updateTime(inputElement) {
+            const type = inputElement.getAttribute('data-type');
+            const id = inputElement.getAttribute('data-id');
+            const newTime = inputElement.value;
+            
+            const endpoint = type === 'Truck' ? '/update_truck_time' : '/update_transport_time';
+            const bodyData = type === 'Truck' 
+                ? { license_plate: id, time: newTime }
+                : { transport_id: id, time: newTime };
+            
+            fetch(endpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(bodyData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.success) {
+                    alert('Error updating time: ' + (data.error || 'Unknown error'));
+                    location.reload();
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to update time');
+                location.reload();
+            });
+        }
+        
+        function assignTransportToTruck() {
+            const checkboxes = document.querySelectorAll('input[name="planning_item"]:checked');
+            if (checkboxes.length !== 2) {
+                alert('Please select exactly one Transport and one Truck');
+                return;
+            }
+            
+            let transportId = null;
+            let truckId = null;
+            
+            checkboxes.forEach(cb => {
+                const row = cb.closest('tr');
+                const cells = row.querySelectorAll('td');
+                const weight = cells[8].textContent.trim(); // Weight column
+                
+                // If Weight is empty, it's a Truck; otherwise it's a Transport
+                if (weight === '') {
+                    truckId = cb.value;
+                } else {
+                    transportId = cb.value;
+                }
+            });
+            
+            if (!transportId || !truckId) {
+                alert('Please select exactly one Transport and one Truck');
+                return;
+            }
+            
+            fetch('/assign_transport', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    transport_id: transportId,
+                    truck_id: truckId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Transport assigned successfully');
+                    location.reload();
+                } else {
+                    alert('Error: ' + (data.error || 'Unknown error'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to assign transport');
+            });
+        }
+        
+        function unassignTransport() {
+            const checkboxes = document.querySelectorAll('input[name="planning_item"]:checked');
+            if (checkboxes.length !== 1) {
+                alert('Please select exactly one Transport');
+                return;
+            }
+            
+            const cb = checkboxes[0];
+            const row = cb.closest('tr');
+            const cells = row.querySelectorAll('td');
+            const weight = cells[8].textContent.trim(); // Weight column
+            
+            // Check if it's a Transport (has weight)
+            if (weight === '') {
+                alert('Please select a Transport (not a Truck)');
+                return;
+            }
+            
+            const transportId = cb.value;
+            
+            fetch('/unassign_transport', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    transport_id: transportId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Transport unassigned successfully');
+                    location.reload();
+                } else {
+                    alert('Error: ' + (data.error || 'Unknown error'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to unassign transport');
+            });
+        }
     </script>
 </head>
 <body>
     <div class="header">
-        <div style="display: flex; align-items: baseline; gap: 12px;">
-            <h1 style="margin: 0;">OneDispatch Direct</h1>
-            <div style="font-size: 12px;">
-                <a href="/" style="margin-right: 8px;">Overview</a>
+        <div class="header-left">
+            <h1>OneDispatch Direct</h1>
+            <div class="nav-links">
+                <a href="#" onclick="goToOverview(); return false;">Overview</a>
                 <a href="/planning">Planning</a>
             </div>
         </div>
+        <div class="date-controls">
+            <input type="date" id="start_date_input" onchange="applyFilters()">
+            <span id="date_range_input" class="days-display">0</span>
+            <button onclick="adjustDateRange(-1)">-</button>
+            <button onclick="adjustDateRange(1)">+</button>
+        </div>
+        <select id="department_filter" class="department-filter" onchange="changeDepartment()">
+            <option value="KDEGR" selected>KDEGR</option>
+            <option value="KDEFR">KDEFR</option>
+            <option value="KFRGR">KFRGR</option>
+            <option value="NAESJ">NAESJ</option>
+            <option value="ALL">All Departments</option>
+        </select>
+    </div>
+    
+    <div style="margin-bottom: 10px;">
+        <button onclick="assignTransportToTruck()" style="background-color: #1a5490; color: white; border: none; padding: 8px 16px; margin-right: 8px; cursor: pointer; border-radius: 4px; font-size: 14px;">Assign</button>
+        <button onclick="unassignTransport()" style="background-color: #1a5490; color: white; border: none; padding: 8px 16px; cursor: pointer; border-radius: 4px; font-size: 14px;">Unassign</button>
     </div>
     
     <div class="frames-container">
         <div class="top-frame">
-            <div class="section-title">Trucks</div>
             <table>
                 <thead>
                     <tr>
+                        <th></th>
                         <th>Location</th>
                         <th>Time</th>
+                        <th>Date</th>
                         <th>License Plate</th>
                         <th>Driver</th>
                         <th>Trailer</th>
-                        <th>Phone</th>
                         <th>Haulier</th>
-                        <th>Transport</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for truck in trucks %}
-                    <tr class="clickable-row" onclick="selectTruck('{{ truck.License_plate }}', '{{ truck.Transport }}', this)">
-                        <td>{{ truck.Location }}</td>
-                        <td>{{ truck.Time }}</td>
-                        <td>{{ truck.License_plate }}</td>
-                        <td>{{ truck.Driver }}</td>
-                        <td>{{ truck.Trailer }}</td>
-                        <td>{{ truck.Phone }}</td>
-                        <td>{{ truck.Haulier }}</td>
-                        <td>{{ truck.Transport }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            
-            <div class="section-title" style="margin-top: 20px;">Transports</div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Location</th>
-                        <th>Time</th>
-                        <th>Transport ID</th>
-                        <th>Pickup Date</th>
-                        <th>Delivery Date</th>
                         <th>Weight</th>
-                        <th>Volume</th>
                         <th>LDM</th>
                         <th>Cost</th>
-                        <th>Status</th>
-                        <th>Vehicle</th>
-                        <th>Haulier</th>
-                        <th>Driver</th>
+                        <th>Sale</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for transport in transports %}
-                    <tr class="clickable-row" onclick="selectTransport('{{ transport.Transport_ID }}', this)">
-                        <td>{{ transport.first_stop_location }}</td>
-                        <td>{{ transport.first_stop_time }}</td>
-                        <td>{{ transport.Transport_ID }}</td>
-                        <td>{{ transport.Pickup_date }}</td>
-                        <td>{{ transport.Delivery_date }}</td>
-                        <td>{{ transport.Weight }}</td>
-                        <td>{{ transport.Volume }}</td>
-                        <td>{{ transport.Ldm }}</td>
-                        <td>{{ transport.Cost }}</td>
-                        <td>{{ transport.Status }}</td>
-                        <td>{{ transport.Vehicle }}</td>
-                        <td>{{ transport.Haulier }}</td>
-                        <td>{{ transport.Driver }}</td>
+                    {% for item in combined_items %}
+                    <tr class="clickable-row" onclick="{% if item.Type == 'Transport' %}selectTransport('{{ item.ID }}', this){% else %}selectTruck('{{ item.License_Plate }}', '', this){% endif %}">
+                        <td onclick="event.stopPropagation();"><input type="checkbox" name="planning_item" value="{{ item.ID }}" onclick="event.stopPropagation(); handleCheckboxClick(this, '{{ item.Type }}', '{{ item.ID }}', this.parentElement.parentElement);"></td>
+                        <td>{{ item.Location }}</td>
+                        <td onclick="event.stopPropagation();"><input type="text" class="time-input" value="{{ item.Time }}" data-type="{{ item.Type }}" data-id="{{ item.ID }}" onblur="updateTime(this)" /></td>
+                        <td>{{ item.Date }}</td>
+                        <td>{{ item.License_Plate }}</td>
+                        <td>{{ item.Driver }}</td>
+                        <td>{{ item.Trailer }}</td>
+                        <td>{{ item.Haulier }}</td>
+                        <td>{{ item.Weight }}</td>
+                        <td>{{ item.Ldm }}</td>
+                        <td>{{ item.Cost }}</td>
+                        <td>{{ item.Sale }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
