@@ -862,7 +862,7 @@ def planning():
     
     # Filter trucks by department
     if department and department != 'ALL':
-        filtered_trucks_df = trucks_df[trucks_df['Department'] == department]
+        filtered_trucks_df = trucks_df[trucks_df['Department'] == department].copy()
     else:
         filtered_trucks_df = trucks_df.copy()
     
@@ -906,6 +906,9 @@ def planning():
     if department and department != 'ALL':
         filtered_transports = [t for t in filtered_transports if t.Department == department]
     
+    # Filter to only show transports with status "Planning"
+    filtered_transports = [t for t in filtered_transports if t.Status == 'Planning']
+    
     # Apply date range filter to transports
     if date_range_days:
         try:
@@ -947,7 +950,7 @@ def planning():
             'Date': transport.Pickup_date,
             'License_Plate': transport.Vehicle,
             'Driver': transport.Driver,
-            'Trailer': transport.Trailer,
+            'Trailer': transport.Trailer if transport.Trailer else '',
             'Haulier': transport.Haulier,
             'Weight': transport.Weight,
             'Ldm': transport.Ldm,
@@ -989,20 +992,43 @@ def planning():
             'Date': truck.get('Date', ''),
             'License_Plate': truck.get('License_plate', ''),
             'Driver': truck.get('Driver', ''),
-            'Trailer': truck.get('Trailer', ''),
+            'Trailer': truck.get('Trailer', '') if pd.notna(truck.get('Trailer')) else '',
             'Haulier': truck.get('Haulier', ''),
             'Weight': '',
             'Ldm': '',
             'Cost': '',
             'Sale': '',
-            'Department': truck.get('Department', '')
+            'Department': truck.get('Department', ''),
+            'Last_transport': truck.get('Last_transport', '')
         }
         combined_list.append(combined_item)
     
     # Sort by Time descending
     combined_list.sort(key=lambda x: x['Time'] if x['Time'] else '', reverse=True)
     
-    return render_template('planning.html', combined_items=combined_list)
+    # Get available trailers based on department filter and open_pool checkbox
+    open_pool_filter = request.args.get('open_pool', 'false').lower() == 'true'
+    if open_pool_filter:
+        # When checked: show all trailers with Open_pool == True (ignore department)
+        available_trailers = trailers_df[
+            trailers_df['Open_pool'] == True
+        ]
+    else:
+        # When unchecked: show trailers from filtered department with Open_pool == False
+        if department and department != 'ALL':
+            available_trailers = trailers_df[
+                (trailers_df['Department'] == department) & 
+                (trailers_df['Open_pool'] == False)
+            ]
+        else:
+            available_trailers = trailers_df[
+                trailers_df['Open_pool'] == False
+            ]
+    
+    # Convert to list of license plates for the template
+    trailers_list = available_trailers['License_plate'].tolist()
+    
+    return render_template('planning.html', combined_items=combined_list, available_trailers=trailers_list, current_department=department)
 
 @app.route('/planning/stops/<type>/<id>')
 def planning_stops(type, id):
@@ -1249,6 +1275,146 @@ def unassign_transport():
             trucks_df.to_csv('Backend_Mobility/df_trucks.csv', index=False)
         
         return jsonify({'success': True})
+    
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/transfer_truck', methods=['POST'])
+def transfer_truck():
+    try:
+        data = request.json
+        transport_id = data.get('transport_id')
+        date = data.get('date')
+        time = data.get('time')
+        
+        if not transport_id:
+            return jsonify({'success': False, 'error': 'Transport ID required'}), 400
+        
+        if not date or not time:
+            return jsonify({'success': False, 'error': 'Date and time are required'}), 400
+        
+        # Get the transport object
+        transport = Transport.get_by_id(transport_id)
+        if not transport:
+            return jsonify({'success': False, 'error': 'Transport not found'}), 404
+        
+        # Check if transport has a vehicle assigned
+        if transport.Vehicle == "":
+            return jsonify({'success': False, 'error': 'No Truck assigned to transport'}), 400
+        
+        current_license_plate = transport.Vehicle
+        
+        # Update transport status to "Handled"
+        transport.Status = 'Handled'
+        
+        # Update the truck - save current transport to Last_transport before clearing
+        global trucks_df
+        truck_mask = trucks_df['License_plate'] == current_license_plate
+        if truck_mask.any():
+            # Save current Transport to Last_transport before clearing
+            current_transport = trucks_df.loc[truck_mask, 'Transport'].values[0]
+            if 'Last_transport' not in trucks_df.columns:
+                trucks_df['Last_transport'] = ''
+            trucks_df.loc[truck_mask, 'Last_transport'] = current_transport
+            trucks_df.loc[truck_mask, 'Transport'] = ""
+            trucks_df.loc[truck_mask, 'Date'] = date
+            trucks_df.loc[truck_mask, 'Time'] = time
+        
+        # Save to CSV
+        trucks_df.to_csv('Backend_Mobility/df_trucks.csv', index=False)
+        
+        return jsonify({'success': True, 'message': f'Transport executed successfully. Truck {current_license_plate} updated to {date} {time}'})
+    
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/update_trailer', methods=['POST'])
+def update_trailer():
+    global trucks_df
+    try:
+        data = request.json
+        item_type = data.get('type')  # 'Transport' or 'Truck'
+        item_id = data.get('id')
+        new_trailer = data.get('trailer', '')
+        
+        if not item_type or not item_id:
+            return jsonify({'success': False, 'error': 'Type and ID required'}), 400
+        
+        if item_type == 'Transport':
+            # Update Transport object
+            transport = Transport.get_by_id(item_id)
+            if not transport:
+                return jsonify({'success': False, 'error': 'Transport not found'}), 404
+            
+            transport.Trailer = new_trailer
+            
+            # If transport has a vehicle assigned, update the truck's trailer too
+            if transport.Vehicle:
+                truck_mask = trucks_df['License_plate'] == transport.Vehicle
+                if truck_mask.any():
+                    trucks_df.loc[truck_mask, 'Trailer'] = new_trailer
+                    trucks_df.to_csv('Backend_Mobility/df_trucks.csv', index=False)
+            
+        elif item_type == 'Truck':
+            # Update Truck in DataFrame
+            mask = trucks_df['License_plate'] == item_id
+            if not mask.any():
+                return jsonify({'success': False, 'error': 'Truck not found'}), 404
+            
+            trucks_df.loc[mask, 'Trailer'] = new_trailer
+            
+            # If truck has a transport assigned, update the transport's trailer too
+            truck_row = trucks_df[mask].iloc[0]
+            if pd.notna(truck_row['Transport']) and truck_row['Transport'] != '':
+                transport = Transport.get_by_id(truck_row['Transport'])
+                if transport:
+                    transport.Trailer = new_trailer
+            
+            # Save to CSV
+            trucks_df.to_csv('Backend_Mobility/df_trucks.csv', index=False)
+        else:
+            return jsonify({'success': False, 'error': 'Invalid type'}), 400
+        
+        return jsonify({'success': True})
+    
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/search_trailers', methods=['POST'])
+def search_trailers():
+    try:
+        data = request.json
+        search_term = data.get('search', '').strip().upper()
+        department = data.get('department', '')
+        open_pool_filter = data.get('open_pool', False)
+        
+        if not search_term:
+            return jsonify({'matches': []})
+        
+        # Get available trailers based on department filter and open_pool checkbox
+        if open_pool_filter:
+            # When checked: show all trailers with Open_pool == True (ignore department)
+            available_trailers = trailers_df[
+                trailers_df['Open_pool'] == True
+            ]
+        else:
+            # When unchecked: show trailers from filtered department with Open_pool == False
+            if department and department != 'ALL':
+                available_trailers = trailers_df[
+                    (trailers_df['Department'] == department) & 
+                    (trailers_df['Open_pool'] == False)
+                ]
+            else:
+                available_trailers = trailers_df[
+                    trailers_df['Open_pool'] == False
+                ]
+        
+        # Search for matching trailers
+        matches = available_trailers[
+            available_trailers['License_plate'].str.upper().str.contains(search_term, na=False)
+        ]['License_plate'].tolist()
+        
+        return jsonify({'matches': matches})
     
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
